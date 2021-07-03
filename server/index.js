@@ -4,7 +4,7 @@ import express from "express";
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send({ message: "Tesssingggg" });
+  res.json({ message: "Tesssingggg" });
 });
 
 const PORT = process.env.PORT || 3001;
