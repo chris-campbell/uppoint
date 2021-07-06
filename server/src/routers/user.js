@@ -2,6 +2,8 @@ import express from "express";
 import User from "../models/user.js";
 const router = express.Router();
 
+router.post("/users/login", (req, res) => {});
+
 // [POST] Create single user in DB
 router.post("/users", async (req, res) => {
   const user = User(req.body);

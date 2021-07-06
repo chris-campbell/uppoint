@@ -46,6 +46,22 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.static.findByCredentials = async (email, password) => {
+  const user = User.findOne({ email });
+
+  if (!user) {
+    throw new Error("Unable to login");
+  }
+
+  const isMatch = await bycrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new Error("Unable to login");
+  }
+
+  return user;
+};
+
 const User = mongoose.model("User", userSchema);
 
 export default User;
