@@ -2,7 +2,19 @@ import express from "express";
 import User from "../models/user.js";
 const router = express.Router();
 
-router.post("/users/login", (req, res) => {});
+router.post("/users/login", async (req, res) => {
+  console.log(req.body);
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+
+    res.send(user);
+  } catch (error) {
+    res.status(400).send();
+  }
+});
 
 // [POST] Create single user in DB
 router.post("/users", async (req, res) => {

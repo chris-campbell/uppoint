@@ -24,6 +24,17 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+    trim: 6,
+    validate(value) {
+      if (value.toLowerCase().includes("password")) {
+        throw new Error("Password can't be password");
+      }
+    },
+  },
   gender: {
     type: String,
     required: true,
