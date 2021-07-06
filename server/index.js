@@ -1,13 +1,15 @@
-import path from "path";
 import express from "express";
+import "./src/db/mongoose.js";
+import userRouter from "./src/routers/user.js";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.json({ message: "Tesssingggg" });
-});
+app.use(express.json());
+app.use(userRouter);
 
-const PORT = process.env.PORT || 3001;
+// PORT DECLARATION
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`Server is now running on port ${PORT}`);
+  console.log("Connection success: ", `Server is now running on port ${PORT}`);
 });
