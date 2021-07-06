@@ -3,16 +3,16 @@ import User from "../models/user.js";
 const router = express.Router();
 
 router.post("/users/login", async (req, res) => {
-  console.log(req.body);
   try {
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
+    const token = await user.generateAuthToken();
 
-    res.send(user);
+    res.send({ user, token });
   } catch (error) {
-    res.status(400).send();
+    res.status(500).send(error.message);
   }
 });
 
@@ -21,7 +21,10 @@ router.post("/users", async (req, res) => {
   const user = User(req.body);
   try {
     await user.save();
-    res.status(201).send(user);
+
+    const token = await user.generateAuthToken();
+
+    res.status(201).send({ user, token });
   } catch (error) {
     res.status(400).send(error.message);
   }
