@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/user.js";
+import auth from "../middleware/auth.js";
 const router = express.Router();
 
 router.post("/users/login", async (req, res) => {
@@ -30,15 +31,9 @@ router.post("/users", async (req, res) => {
   }
 });
 
-// [GET] Retrieve all users from DB
-router.get("/users", async (req, res) => {
-  const user = await User.find({});
-
-  if (!user) {
-    return res.status(404).send();
-  }
-
-  res.send(user);
+// [GET] Retrieve user profile
+router.get("/users/me", auth, async (req, res) => {
+  res.send(req.user);
 });
 
 // [GET] Retrieve single user from DB

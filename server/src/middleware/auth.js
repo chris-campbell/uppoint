@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user";
+import User from "../models/user.js";
 
 const auth = async (req, res, next) => {
   try {
@@ -20,3 +20,5 @@ const auth = async (req, res, next) => {
     res.status(401).send("Please authenticate user");
   }
 };
+
+export default auth;
