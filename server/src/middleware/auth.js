@@ -1,0 +1,22 @@
+import jwt from "jsonwebtoken";
+import User from "../models/user";
+
+const auth = async (req, res, next) => {
+  try {
+    const token = req.header("Authorization").replace("Bearer ", "");
+    const decoded = jwt.verify(token, "mercibunny");
+    const user = await User.findOne({
+      _id: decoded._id,
+      "tokens.token": token,
+    });
+
+    if (!user) {
+      throw new Error("No User");
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).send("Please authenticate user");
+  }
+};
