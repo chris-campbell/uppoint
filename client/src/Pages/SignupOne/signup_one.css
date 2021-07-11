@@ -18,6 +18,12 @@
   align-items: center;
 }
 
+@media (max-width: 968px) {
+  .join__split {
+    flex-direction: column;
+  }
+}
+
 .join__signup-copy-wrapper {
   padding: 4rem;
   max-width: 500px;
@@ -33,6 +39,12 @@
   flex-direction: column;
 }
 
+@media (max-width: 968px) {
+  .join__signup {
+    width: 100%;
+  }
+}
+
 .join__signup img {
   width: 3rem;
 }
@@ -40,17 +52,18 @@
 .join__signup h1 {
   text-align: center;
   margin: 2rem 1rem;
-  padding-top: 9rem;
+  padding-top: 7vh;
   color: var(--secondary-color);
   font-family: source sans pro;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 2.5vw, 6rem);
 }
 
 .join__signup p {
-  margin-bottom: 6rem;
+  margin-bottom: 4rem;
   text-align: center;
   color: var(--accent-light);
   font-family: source sans pro;
+  font-size: clamp(1rem, 1vw, 1.5rem);
 }
 
 .join__signup .join__signin-btn {
@@ -69,15 +82,15 @@
 .join__create-account {
   display: flex;
   flex-direction: column;
-  min-width: 300px;
   margin: 0 auto;
 }
 
 .join__create-account h1 {
   margin-bottom: 1rem;
+  margin-top: 2rem;
   font-family: source sans pro;
   font-weight: 600;
-  font-size: 3rem;
+  font-size: clamp(2rem, 2.5vw, 6rem);
   color: #636363;
 }
 
@@ -123,15 +136,21 @@
 .join__create-wrapper {
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
 }
 
 .join__signup-form {
   display: flex;
   flex-direction: column;
+  margin-bottom: 3rem;
 }
 
 .join__input-item {
   padding-bottom: 1rem !important;
+}
+
+.join__link {
+  text-align: center;
 }
 
 .join__submit-btn {

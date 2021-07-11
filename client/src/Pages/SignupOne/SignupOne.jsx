@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Textfield from "@material-ui/core/TextField";
-import "./join.css";
+import "./signup_one.css";
 import Logo from "./img/logo.svg";
 import GoogleIcon from "./img/google_icon.svg";
 import { Link } from "react-router-dom";
@@ -28,11 +28,10 @@ const creatUser = async () => {
   console.log(myJson);
 };
 
-const Join = () => {
+const SignupOne = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [passwordToken, setPasswordToken] = useState("");
 
   const handleFirstNameChange = (e) => {
     console.log(firstName);
@@ -49,10 +48,6 @@ const Join = () => {
     setEmail(e.target.value);
   };
 
-  const handlePasswordChange = (e) => {
-    console.log(passwordToken);
-    setPasswordToken(e.target.value);
-  };
   return (
     <div className="join">
       <div className="join__wrapper">
@@ -99,12 +94,6 @@ const Join = () => {
                   className="join__input-item"
                   onChange={handleEmailChange}
                 />
-                <Textfield
-                  label="Password"
-                  variant="outlined"
-                  className="join__input-item"
-                  onChange={handlePasswordChange}
-                />
                 <Link
                   to={{
                     pathname: "/signup-details",
@@ -112,9 +101,9 @@ const Join = () => {
                       first: firstName,
                       last: lastName,
                       e: email,
-                      password: passwordToken,
                     },
                   }}
+                  className="join__link"
                 >
                   <button
                     className="join__submit-btn"
@@ -133,4 +122,4 @@ const Join = () => {
   );
 };
 
-export default Join;
+export default SignupOne;

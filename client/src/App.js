@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Join from "./components/Join/join";
-import Details from "./components/Details/details";
+import SignupOne from "./Pages/SignupOne/SignupOne";
+import SignupTwo from "./Pages/SignupTwo/signupTwo";
 import {
   BrowserRouter as Router,
   Route,
@@ -22,8 +22,8 @@ function App() {
         {/* <Join /> */}
 
         <Switch>
-          <Route path="/" exact component={Join} />
-          <Route path="/signup-details" component={Details} />
+          <Route path="/" exact component={SignupOne} />
+          <Route path="/signup-details" component={SignupTwo} />
         </Switch>
       </Router>
     </div>

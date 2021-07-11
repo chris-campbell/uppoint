@@ -1,6 +1,6 @@
 import React from "react";
 
-const Details = (props) => {
+const SignupTwo = (props) => {
   return (
     <>
       <h1>{props.location.state.first}</h1>
@@ -11,4 +11,4 @@ const Details = (props) => {
   );
 };
 
-export default Details;
+export default SignupTwo;
