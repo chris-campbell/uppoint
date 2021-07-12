@@ -7,6 +7,11 @@
   --label-sub: rgb(115 115 115);
 }
 
+/* GLOBAL */
+* {
+  font-family: Source sans pro !important;
+}
+
 /* ADDITIONAL DETAILS SECTION */
 .signup-two {
   height: 100vh;

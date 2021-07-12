@@ -1,8 +1,7 @@
 import React from "react";
-import Male from "./img/male-gender.svg";
 import Avatar from "./img/avatar.svg";
 import Textfield from "@material-ui/core/TextField";
-import "./signup_two.scss";
+import "./css/signup_two.scss";
 
 const SignupTwo = (props) => {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Textfield from "@material-ui/core/TextField";
-import "./signup_one.css";
+import "./css/signup_one.scss";
 import Logo from "./img/logo.svg";
 import GoogleIcon from "./img/google_icon.svg";
 import { Link } from "react-router-dom";
