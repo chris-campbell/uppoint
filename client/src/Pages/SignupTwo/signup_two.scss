@@ -1,0 +1,154 @@
+:root {
+	--primary-color-red: #eb4d4b;
+	--secondary-color: #f1c40f;
+	--accent-light: #fff;
+	--accent-dark: #707070;
+	--label-main: rgb(66, 66, 66);
+	--label-sub: rgb(115 115 115);
+}
+
+/* ADDITIONAL DETAILS SECTION */
+.signup-two {
+	height: 100vh;
+}
+.signup-two__wrapper {
+	height: 100vh;
+}
+.signup-two__split {
+	display: flex;
+	height: 100vh;
+}
+.signup-two__additional-details {
+	width: 70%;
+	height: 100%;
+}
+.signup-two__additional-details-wrapper {
+	width: 79%;
+	margin: 0 auto;
+	margin-top: 7%;
+	max-width: 37.5rem;
+}
+.signup-two__title {
+	margin-bottom: 3rem;
+	color: var(--label-main);
+}
+.signup-two__btn {
+	fill: var(--primary-color-red);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	label {
+		color: var(--label-sub);
+	}
+	.male-icon {
+		fill: var(--primary-color-red);
+		color: var(--primary-color-red);
+		width: 0.8rem;
+	}
+	.female-icon {
+		fill: var(--primary-color-red);
+		color: var(--primary-color-red);
+		width: 0.6rem;
+	}
+}
+.signup-two__gender-option {
+	display: flex;
+	align-items: center;
+	.male-label {
+		margin-right: 2rem;
+		color: var(--label-sub);
+	}
+	.female-label {
+		margin-right: 2rem;
+		color: var(--label-sub);
+	}
+	.other-label {
+		color: var(--label-sub);
+	}
+}
+.signup-two__icon-container {
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+	border: 0.119rem solid var(--primary-color-red);
+	border-radius: 50%;
+	margin-right: 0.5rem;
+}
+.other-icon {
+	height: 0.125rem;
+	width: 0.625rem;
+	background: var(--primary-color-red);
+}
+.form {
+	display: flex;
+	flex-direction: column;
+	margin-top: 4rem;
+}
+.details-input {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+	label {
+		color: var(--label-sub);
+	}
+}
+.input-item {
+	width: 69%;
+}
+
+/* COPY SECTION */
+.signup-two__copy {
+	background: var(--secondary-color);
+	position: relative;
+	width: 30%;
+	height: 100vh;
+	img {
+		width: 7rem;
+		margin: 0 auto;
+		display: block;
+		text-align: center;
+		margin-bottom: 5rem;
+	}
+	h3 {
+		color: var(--accent-light);
+		text-align: center;
+		margin-bottom: 1.5rem;
+		font-size: clamp(2rem, 1.4vw, 3rem);
+	}
+	p {
+		color: var(--accent-light);
+		text-align: center;
+		font-size: clamp(1rem, 1vw, 1.5rem);
+	}
+}
+.signup-two__copy-wrapper {
+	margin-top: 10rem;
+	padding-inline: 3rem;
+}
+.signup-two__finish-btn {
+	padding: 0.7rem 3rem;
+	background-color: var(--primary-color-red);
+	color: var(--accent-light);
+	border: none;
+	border-radius: 1.563rem;
+	position: absolute;
+	right: 2rem;
+	bottom: 2rem;
+	&:hover {
+		background-color: rgb(170, 0, 0);
+	}
+}
+
+/* REACT TEXTFIELD OVERRIDES */
+.MuiInputLabel-outlined {
+	font-size: 0.9rem !important;
+	padding-left: 0.125 !important;
+	color: var(--label) !important;
+}
+.PrivateNotchedOutline-root-1 {
+	border: 1.5px solid var(--primary-color-red) !important;
+}

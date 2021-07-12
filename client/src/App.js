@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SignupOne from "./Pages/SignupOne/SignupOne";
 import SignupTwo from "./Pages/SignupTwo/signupTwo";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -19,8 +20,6 @@ function App() {
   return (
     <div className="App">
       <Router>
-        {/* <Join /> */}
-
         <Switch>
           <Route path="/" exact component={SignupOne} />
           <Route path="/signup-details" component={SignupTwo} />
