@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SignupOne from "./Pages/SignupOne/SignupOne";
 import SignupTwo from "./Pages/SignupTwo/signupTwo";
+import Dashboard from "./Pages/Dashboard/dashboard";
 
 import {
   BrowserRouter as Router,
@@ -23,6 +24,7 @@ function App() {
         <Switch>
           <Route path="/" exact component={SignupOne} />
           <Route path="/signup-details" component={SignupTwo} />
+          <Route path="/dashboard" component={Dashboard} />
         </Switch>
       </Router>
     </div>

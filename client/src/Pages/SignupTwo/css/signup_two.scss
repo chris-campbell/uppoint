@@ -6,11 +6,6 @@
 	--label-main: rgb(66, 66, 66);
 	--label-sub: rgb(115 115 115);
 }
-/* GLOBAL */
-
-* {
-	font-family: Source sans pro !important;
-}
 
 /* ADDITIONAL DETAILS SECTION */
 .signup-two {
@@ -143,9 +138,7 @@
 	position: absolute;
 	right: 2rem;
 	bottom: 2rem;
-	&:hover {
-		background-color: rgb(170, 0, 0);
-	}
+	cursor: pointer;
 }
 
 /* REACT TEXTFIELD OVERRIDES */
@@ -155,5 +148,5 @@
 	color: var(--label) !important;
 }
 .PrivateNotchedOutline-root-1 {
-	border: 1.5px solid var(--primary-color-red) !important;
+	border: 1.5px solid #d2d2d2  !important;
 }

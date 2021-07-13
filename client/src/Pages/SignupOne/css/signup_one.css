@@ -163,6 +163,18 @@
   text-align: center;
 }
 
+.join__disable-btn {
+  padding: 1rem;
+  border-radius: 30px;
+  border: none !important;
+  text-align: center;
+  margin: 0 auto;
+  margin-top: 1.3rem;
+  width: 200px;
+  background: #d8d8d8;
+  color: var(--accent-dark);
+}
+
 .join__submit-btn {
   padding: 1rem;
   border-radius: 30px;

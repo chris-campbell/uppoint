@@ -4,6 +4,7 @@ import "./css/signup_one.scss";
 import Logo from "./img/logo.svg";
 import GoogleIcon from "./img/google_icon.svg";
 import { Link } from "react-router-dom";
+import validator from "validator";
 
 const creatUser = async () => {
   const d = new Date(2018, 11, 24, 10);
@@ -34,18 +35,35 @@ const SignupOne = () => {
   const [email, setEmail] = useState("");
 
   const handleFirstNameChange = (e) => {
-    console.log(firstName);
     setFirstName(e.target.value);
   };
 
   const handleLastNameChange = (e) => {
-    console.log(lastName);
     setLastName(e.target.value);
   };
 
   const handleEmailChange = (e) => {
-    console.log(email);
     setEmail(e.target.value);
+  };
+
+  const isValidateEmail = (email) => {
+    if (!validator.isEmail(email)) {
+      return false;
+    }
+    return true;
+  };
+
+  const isFieldsEmpty = () => {
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      email === "" ||
+      !isValidateEmail(email)
+    ) {
+      return false;
+    }
+
+    return true;
   };
 
   return (
@@ -94,25 +112,31 @@ const SignupOne = () => {
                   className="join__input-item"
                   onChange={handleEmailChange}
                 />
-                <Link
-                  to={{
-                    pathname: "/signup-details",
-                    state: {
-                      first: firstName,
-                      last: lastName,
-                      e: email,
-                    },
-                  }}
-                  className="join__link"
-                >
-                  <button
-                    className="join__submit-btn"
-                    type="submit"
-                    value="Sign up"
-                  >
+                {!isFieldsEmpty() ? (
+                  <button className="join__disable-btn" disabled="l">
                     Continue
                   </button>
-                </Link>
+                ) : (
+                  <Link
+                    to={{
+                      pathname: "/signup-details",
+                      state: {
+                        first: firstName,
+                        last: lastName,
+                        e: email,
+                      },
+                    }}
+                    className="join__link"
+                  >
+                    <button
+                      className="join__submit-btn active-btn"
+                      type="submit"
+                      value="Sign up"
+                    >
+                      Continue
+                    </button>
+                  </Link>
+                )}
               </form>
             </div>
           </div>

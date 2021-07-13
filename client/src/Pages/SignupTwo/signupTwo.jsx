@@ -1,9 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "./img/avatar.svg";
 import Textfield from "@material-ui/core/TextField";
+import PhoneInput from "react-phone-number-input";
+import { Redirect } from "react-router";
+import { useHistory } from "react-router-dom";
 import "./css/signup_two.scss";
 
 const SignupTwo = (props) => {
+  const [birthday, setBirthday] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [location, setLocation] = useState("");
+  const [password, setPassword] = useState("");
+  let history = useHistory();
+
+  const creatUser = async () => {
+    const d = new Date(2018, 11, 24, 10);
+    await fetch("/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: props.location.state.first,
+        lastName: props.location.state.last,
+        email: props.location.state.e,
+        password: password,
+        gender: "female",
+        birthday: d,
+        phone: mobile,
+        location: location,
+      }),
+    });
+    history.push("/dashboard");
+  };
+  const handleDateOFBirth = (e) => {
+    console.log(birthday);
+    setBirthday(e.target.value);
+  };
+
+  const handleMobileNumber = (e) => {
+    setMobile(e.target.value);
+  };
+
+  const handlelocation = (e) => {
+    setLocation(e.target.value);
+  };
+
+  const handlePassword = (e) => {
+    setPassword(e.target.value);
+  };
+
   return (
     <div className="signup-two">
       <div className="signup-two__wrapper">
@@ -58,6 +104,7 @@ const SignupTwo = (props) => {
                       label="12/22/1985"
                       variant="outlined"
                       className="input-item"
+                      onChange={handleDateOFBirth}
                     />
                   </div>
                   <div className="signup-two__mobile details-input">
@@ -66,6 +113,7 @@ const SignupTwo = (props) => {
                       label="718 555 5555"
                       variant="outlined"
                       className="input-item"
+                      onChange={handleMobileNumber}
                     />
                   </div>
                   <div className="signup-two__location details-input">
@@ -74,6 +122,7 @@ const SignupTwo = (props) => {
                       label="1 Fake street"
                       variant="outlined"
                       className="input-item"
+                      onChange={handlelocation}
                     />
                   </div>
                   <div className="signup-two__image details-input">
@@ -90,6 +139,7 @@ const SignupTwo = (props) => {
                       label="Password"
                       variant="outlined"
                       className="input-item"
+                      onChange={handlePassword}
                     />
                   </div>
                 </form>
@@ -106,7 +156,12 @@ const SignupTwo = (props) => {
                 justo
               </p>
             </div>
-            <button className="signup-two__finish-btn">Finish</button>
+            <button
+              onClick={creatUser}
+              className="signup-two__finish-btn active-btn"
+            >
+              Finish
+            </button>
           </div>
         </div>
       </div>
