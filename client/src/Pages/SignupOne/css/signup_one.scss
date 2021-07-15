@@ -111,6 +111,12 @@
 	flex-direction: column;
 	margin-bottom: 3rem;
 }
+
+.join__signup-form a{
+	list-style: none;
+  text-decoration: none;
+}
+
 .join__input-item {
 	padding-bottom: 1rem !important;
 }
@@ -131,6 +137,8 @@
 }
 
 .join__submit-btn {
+	display: flex;
+	justify-content: center;
 	padding: 1rem;
 	border-radius: 30px;
 	border: none !important;
@@ -140,6 +148,10 @@
 	width: 200px;
 	background: var(--primary-color-red);
 	color: var(--accent-light);
+}
+
+.join__submit-btn:hover {
+	background: rgb(170, 17, 17)
 }
 
 @media (max-width: 968px) {

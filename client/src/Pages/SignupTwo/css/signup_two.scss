@@ -1,3 +1,6 @@
+@import 'react-notifications-component/dist/theme.css';
+@import "react-datepicker/dist/react-datepicker.css";
+
 :root {
 	--primary-color-red: #eb4d4b;
 	--secondary-color: #f1c40f;
@@ -32,6 +35,11 @@
 	margin-bottom: 3rem;
 	color: var(--label-main);
 }
+
+.signup-two__sub-title {
+	color: rgb(141, 141, 141)
+}
+
 .signup-two__btn {
 	fill: var(--primary-color-red);
 	display: flex;
@@ -149,4 +157,44 @@
 }
 .PrivateNotchedOutline-root-1 {
 	border: 1.5px solid #d2d2d2  !important;
+}
+
+
+.react-datepicker-wrapper {
+	width: 69%
+}
+
+
+
+.date-picker {
+	width: 100%;
+    padding: 1rem;
+    border: 1px solid lightgrey;
+    border-radius: 4px;
+}
+
+.date-picker .react-datepicker-ignore-onclickoutside {
+	display: inline
+}
+
+.details-input label {
+    color: var(--label-sub);
+    flex-basis: 40%;
+}
+
+.react-datepicker-wrapper {
+    width: 69%;
+    flex-basis: 69%;
+}
+
+.MuiFormControl-root {
+    border: 0;
+    margin: 0;
+    display: inline-flex;
+    padding: 0;
+    position: relative;
+    min-width: 0;
+    flex-direction: column;
+    vertical-align: top;
+    width: 100%;
 }

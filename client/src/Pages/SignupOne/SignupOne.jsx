@@ -5,34 +5,75 @@ import Logo from "./img/logo.svg";
 import GoogleIcon from "./img/google_icon.svg";
 import { Link } from "react-router-dom";
 import validator from "validator";
-
-const creatUser = async () => {
-  const d = new Date(2018, 11, 24, 10);
-  const response = await fetch("/users", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      firstName: "Random3",
-      lastName: "Person3",
-      email: "random3@gmail.com",
-      password: "upsdown7",
-      gender: "female",
-      birthday: d,
-      phone: "7184629373",
-      location: "1 Madison meth street",
-    }),
-  });
-
-  const myJson = await response.json();
-  console.log(myJson);
-};
+import ReactNotification from "react-notifications-component";
+import { store } from "react-notifications-component";
+import { useHistory } from "react-router-dom";
 
 const SignupOne = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  let history = useHistory();
+
+  const emailUnique = async () => {
+    const headers = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email }),
+    };
+
+    if (!validator.isEmail(email)) {
+      setEmail("");
+      document.getElementById("email-text-field").value = "";
+      const s = store.addNotification({
+        title: "Invalid Email",
+        message: "Please input a valid email address",
+        type: "danger",
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 5000,
+          onScreen: true,
+        },
+      });
+
+      return console.log("Invalid Email format");
+    }
+
+    try {
+      const response = await fetch("/users/check", headers);
+      const data = await response.json();
+
+      if (data === false) {
+        return store.addNotification({
+          title: "Email already exist in the system.",
+          message: "Please try another email address",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: {
+            duration: 5000,
+            onScreen: true,
+          },
+        });
+      }
+
+      history.push({
+        pathname: "/signup-details",
+        state: { first: firstName, last: lastName, email },
+      });
+
+      console.log("Return", data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleFirstNameChange = (e) => {
     setFirstName(e.target.value);
@@ -46,28 +87,27 @@ const SignupOne = () => {
     setEmail(e.target.value);
   };
 
-  const isValidateEmail = (email) => {
-    if (!validator.isEmail(email)) {
-      return false;
+  const isValidateEmail = async () => {
+    if (validator.isEmail(email)) {
+      console.log("valid result: ", validator.isEmail(email));
+      return true;
     }
-    return true;
+    console.log("valid result: ", validator.isEmail(email));
+    return false;
   };
 
   const isFieldsEmpty = () => {
-    if (
-      firstName === "" ||
-      lastName === "" ||
-      email === "" ||
-      !isValidateEmail(email)
-    ) {
+    if (firstName === "" || lastName === "" || email === "") {
       return false;
     }
 
+    console.log("From the end", true);
     return true;
   };
 
   return (
     <div className="join">
+      <ReactNotification />
       <div className="join__wrapper">
         <div className="join__split">
           <div className="join__signup">
@@ -78,16 +118,17 @@ const SignupOne = () => {
                 Proin egestas erat vel magna ornare finibus. Sed sed tristique
                 leo, consectetur fringilla turpis.
               </p>
-              <button onClick={() => creatUser()} className="join__signin-btn">
-                Sign in
-              </button>
+              <button className="join__signin-btn">Sign in</button>
             </div>
           </div>
           <div className="join__create-account">
             <div class="join__create-wrapper">
               <h1>Create an account</h1>
               <div className="join__google-btn">
-                <div onClick={() => test()} class="google-icon-wrapper">
+                <div
+                  onClick={() => isValidateEmail()}
+                  class="google-icon-wrapper"
+                >
                   <img src={GoogleIcon} />
                   <span>Sign in with Google</span>
                 </div>
@@ -110,32 +151,22 @@ const SignupOne = () => {
                   label="Email"
                   variant="outlined"
                   className="join__input-item"
+                  id="email-text-field"
                   onChange={handleEmailChange}
                 />
-                {!isFieldsEmpty() ? (
-                  <button className="join__disable-btn" disabled="l">
-                    Continue
-                  </button>
-                ) : (
-                  <Link
-                    to={{
-                      pathname: "/signup-details",
-                      state: {
-                        first: firstName,
-                        last: lastName,
-                        e: email,
-                      },
-                    }}
-                    className="join__link"
-                  >
+                {isFieldsEmpty() ? (
+                  <Link to="/">
                     <button
-                      className="join__submit-btn active-btn"
-                      type="submit"
-                      value="Sign up"
+                      className="join__submit-btn"
+                      onClick={() => emailUnique()}
                     >
                       Continue
                     </button>
                   </Link>
+                ) : (
+                  <button className="join__disable-btn" disabled="l">
+                    Continue
+                  </button>
                 )}
               </form>
             </div>
