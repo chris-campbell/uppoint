@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./css/dashboard.css";
 import Logo from "./img/logo.svg";
 import Bell from "./img/bell.svg";
 import Avatar from "./img/profile.png";
 import Textfield from "@material-ui/core/TextField";
-const Dashboard = () => {
+import { newAccountNotification } from "../SignupOne/notification";
+import ReactNotification from "react-notifications-component";
+const Dashboard = (props) => {
   return (
     <>
       <nav className="dashboard-nav">
@@ -23,6 +25,7 @@ const Dashboard = () => {
         </div>
       </nav>
       <main className="dash-area">
+        <ReactNotification />
         <Textfield
           label="e.g. John Smith"
           variant="outlined"

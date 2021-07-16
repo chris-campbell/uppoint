@@ -4,12 +4,7 @@ import SignupTwo from "./Pages/SignupTwo/signupTwo";
 import Dashboard from "./Pages/Dashboard/dashboard";
 import Login from "./Pages/Login/login";
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 function App() {
   // const [data, setData] = useState(null);

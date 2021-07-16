@@ -180,6 +180,7 @@
 .details-input label {
     color: var(--label-sub);
     flex-basis: 40%;
+		width: 100%
 }
 
 .react-datepicker-wrapper {
@@ -197,4 +198,19 @@
     flex-direction: column;
     vertical-align: top;
     width: 100%;
+}
+
+.location-container {
+	width: 100%;
+}
+
+.location-search-input {
+	width: 100%;
+	padding: 1rem;
+	border: 1px solid lightgrey;
+	border-radius: 4px;
+}
+
+.location-input {
+	width: 100%;
 }

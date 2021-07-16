@@ -1,99 +1,73 @@
-import React, { useState, useEffect } from "react";
-import Avatar from "./img/avatar.svg";
-import Textfield from "@material-ui/core/TextField";
-import PhoneInput from "react-phone-number-input";
-import { Redirect } from "react-router";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import "./css/signup_two.scss";
-import ReactNotification from "react-notifications-component";
 import { store } from "react-notifications-component";
+import ReactNotification from "react-notifications-component";
 import NumberFormat from "react-number-format";
-// import DatePicker from "react-datepicker";
-import {
-  DatePicker,
-  TimePicker,
-  DateTimePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { KeyboardDatePicker } from "@material-ui/pickers";
+import Textfield from "@material-ui/core/TextField";
+
+import {
+  newAccountNotification,
+  allFieldsErrorNotification,
+} from "../SignupOne/notification";
+import "./css/materialForm.css";
+import "./css/signup_two.scss";
+import Avatar from "./img/avatar.svg";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from "react-places-autocomplete";
 
 const SignupTwo = (props) => {
-  const [birthday, setBirthday] = useState("");
   const [mobile, setMobile] = useState("");
   const [location, setLocation] = useState("");
   const [password, setPassword] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+  const [gender, setGender] = useState("");
   const [selectedDate, handleDateChange] = useState(new Date());
+
+  const { firstname, lastname, email } = props.location.state;
+
+  const handleSelect = async (value) => {
+    setLocation(value);
+  };
 
   let history = useHistory();
 
   const creatUser = async () => {
-    const d = new Date(2018, 11, 24, 10);
-    console.log(props.location);
-
     fetch("/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName: props.location.state.first,
-        lastName: props.location.state.last,
-        email: props.location.state.e,
+        firstName: firstname.toLowerCase(),
+        lastName: lastname.toLowerCase(),
+        email: email.toLowerCase(),
         password: password,
-        gender: "female",
-        birthday: d,
+        gender: gender,
+        birthday: selectedDate,
         phone: mobile,
         location: location,
       }),
     })
       .then((data) => data.json())
       .then((result) => {
-        console.log(result);
-        const s = store.addNotification({
-          title: "Wonderful!",
-          message: result.error,
-          type: "danger",
-          insert: "top",
-          container: "top-right",
-          animationIn: ["animate__animated", "animate__fadeIn"],
-          animationOut: ["animate__animated", "animate__fadeOut"],
-          dismiss: {
-            duration: 5000,
-            onScreen: true,
-            waitForAnimation: true,
-          },
+        if (!result.user) {
+          return allFieldsErrorNotification(result.error);
+        }
+        console.log("Then", result);
+        // setPassword("");
+        history.push({
+          pathname: "/dashboard",
+          state: { firstname: firstname, flag: true },
         });
-        // history.push({
-        //   pathname: '/',
-        //   state: {error: result.error }
-        // });
-
-        console.log(result.error);
+        newAccountNotification();
       })
       .catch((e) => {
         alert(e);
       });
-
-    // console.log(response);
-  };
-
-  const handleDateOFBirth = (e) => {
-    console.log(birthday);
-    setBirthday(e.target.value);
-  };
-
-  const handleMobileNumber = (e) => {
-    setMobile(e.target.value);
-  };
-
-  const handlelocation = (e) => {
-    setLocation(e.target.value);
-  };
-
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
   };
 
   return (
@@ -105,17 +79,20 @@ const SignupTwo = (props) => {
             <div className="signup-two__additional-details">
               <div className="signup-two__additional-details-wrapper">
                 <h2 className="signup-two__sub-title">
-                  Hey{" "}
-                  {props.location.state.first.charAt(0).toUpperCase() +
-                    props.location.state.first.slice(1)}
-                  ,
+                  Hey {firstname.charAt(0).toUpperCase() + firstname.slice(1)},
                 </h2>
                 <h1 className="signup-two__title">Add Details</h1>
                 <div className="signup-two__male-container">
                   <div className="signup-two__btn">
                     <label>Gender</label>
                     <div class="signup-two__gender-option">
-                      <div className="signup-two__icon-container">
+                      <div
+                        data-gender="male"
+                        className="signup-two__icon-container"
+                        onClick={(e) =>
+                          setGender(e.currentTarget.getAttribute("data-gender"))
+                        }
+                      >
                         <svg
                           className="male-icon"
                           data-name="male-icon"
@@ -131,7 +108,13 @@ const SignupTwo = (props) => {
                         </svg>
                       </div>
                       <span className="male-label">Male</span>
-                      <div className="signup-two__icon-container">
+                      <div
+                        data-gender="female"
+                        className="signup-two__icon-container"
+                        onClick={(e) =>
+                          setGender(e.currentTarget.getAttribute("data-gender"))
+                        }
+                      >
                         <svg
                           className="female-icon"
                           data-name="female-icon"
@@ -145,7 +128,13 @@ const SignupTwo = (props) => {
                         </svg>
                       </div>
                       <span className="female-label">Female</span>
-                      <div className="signup-two__icon-container">
+                      <div
+                        data-gender="other"
+                        className="signup-two__icon-container"
+                        onClick={(e) =>
+                          setGender(e.currentTarget.getAttribute("data-gender"))
+                        }
+                      >
                         <div className="other-icon"></div>
                       </div>
                       <span className="other-label">Other</span>
@@ -171,20 +160,52 @@ const SignupTwo = (props) => {
                         customInput={Textfield}
                         variant="outlined"
                         label="718 555 5555"
-                        format="+1 ### ###-####"
+                        format="### ###-####"
                         className="input-item"
                         mask=" "
-                        onChange={handleMobileNumber}
+                        onChange={(e) => setMobile(e.target.value)}
                       />
                     </div>
                     <div className="signup-two__location details-input">
                       <label>Location</label>
-                      <Textfield
-                        label="1 Fake street"
-                        variant="outlined"
-                        className="input-item"
-                        onChange={handlelocation}
-                      />
+                      <PlacesAutocomplete
+                        value={location}
+                        onChange={setLocation}
+                        onSelect={handleSelect}
+                      >
+                        {({
+                          getInputProps,
+                          suggestions,
+                          getSuggestionItemProps,
+                          loading,
+                        }) => (
+                          <div className="location-input">
+                            <label class="pure-material-textfield-outlined">
+                              <input {...getInputProps({ placeholder: "" })} />
+                              <span>Enter location</span>
+                            </label>
+                            <div>
+                              {loading ? <div>...loading</div> : null}
+                              {suggestions.map((suggestion) => {
+                                const style = {
+                                  backgroundColor: suggestion.active
+                                    ? "#41b6e6"
+                                    : "#fff",
+                                };
+                                return (
+                                  <div
+                                    {...getSuggestionItemProps(suggestion, {
+                                      style,
+                                    })}
+                                  >
+                                    {suggestion.description}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </PlacesAutocomplete>
                     </div>
                     <div className="signup-two__image details-input">
                       <label>Image</label>
@@ -192,6 +213,7 @@ const SignupTwo = (props) => {
                         label="Select image"
                         variant="outlined"
                         className="input-item"
+                        onChange={(e) => setLocation(e)}
                       />
                     </div>
                     <div className="signup-two__password details-input">
@@ -199,8 +221,9 @@ const SignupTwo = (props) => {
                       <Textfield
                         label="Password"
                         variant="outlined"
+                        type="password"
                         className="input-item"
-                        onChange={handlePassword}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </form>
