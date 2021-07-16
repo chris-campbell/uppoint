@@ -8,11 +8,17 @@ import validator from "validator";
 import ReactNotification from "react-notifications-component";
 import { store } from "react-notifications-component";
 import { useHistory } from "react-router-dom";
+import {
+  uniqueEmailNotification,
+  vaildEmailFormatNotification,
+  addedDetailsNotication,
+} from "./notification";
 
 const SignupOne = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
+
   let history = useHistory();
 
   const emailUnique = async () => {
@@ -24,52 +30,28 @@ const SignupOne = () => {
       body: JSON.stringify({ email: email }),
     };
 
+    //Performs check of email formatting
     if (!validator.isEmail(email)) {
       setEmail("");
       document.getElementById("email-text-field").value = "";
-      const s = store.addNotification({
-        title: "Invalid Email",
-        message: "Please input a valid email address",
-        type: "danger",
-        insert: "top",
-        container: "top-right",
-        animationIn: ["animate__animated", "animate__fadeIn"],
-        animationOut: ["animate__animated", "animate__fadeOut"],
-        dismiss: {
-          duration: 5000,
-          onScreen: true,
-        },
-      });
-
-      return console.log("Invalid Email format");
+      return vaildEmailFormatNotification();
     }
 
     try {
+      // Check is email is unique in MongoDB
       const response = await fetch("/users/check", headers);
-      const data = await response.json();
+      const isUnique = await response.json();
 
-      if (data === false) {
-        return store.addNotification({
-          title: "Email already exist in the system.",
-          message: "Please try another email address",
-          type: "danger",
-          insert: "top",
-          container: "top-right",
-          animationIn: ["animate__animated", "animate__fadeIn"],
-          animationOut: ["animate__animated", "animate__fadeOut"],
-          dismiss: {
-            duration: 5000,
-            onScreen: true,
-          },
-        });
+      if (!isUnique) {
+        return uniqueEmailNotification();
       }
 
+      // routes user to next page is all is valid
       history.push({
         pathname: "/signup-details",
-        state: { first: firstName, last: lastName, email },
+        state: { firstname, lastname, email },
       });
-
-      console.log("Return", data);
+      addedDetailsNotication();
     } catch (error) {
       console.log(error);
     }
@@ -87,6 +69,7 @@ const SignupOne = () => {
     setEmail(e.target.value);
   };
 
+  // Checks email is in a valid format
   const isValidateEmail = async () => {
     if (validator.isEmail(email)) {
       console.log("valid result: ", validator.isEmail(email));
@@ -96,12 +79,11 @@ const SignupOne = () => {
     return false;
   };
 
+  // Check if all form field have a value
   const isFieldsEmpty = () => {
-    if (firstName === "" || lastName === "" || email === "") {
+    if (firstname === "" || lastname === "" || email === "") {
       return false;
     }
-
-    console.log("From the end", true);
     return true;
   };
 
