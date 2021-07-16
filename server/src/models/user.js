@@ -28,26 +28,25 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6,
-    trim: 6,
-    validate(value) {
-      if (value.toLowerCase().includes("password")) {
-        throw new Error("Password can't be password");
-      }
-    },
+    minLength: 6,
+    trim: true,
   },
   gender: {
     type: String,
     required: true,
   },
-  dateOfBirth: {
-    type: String,
+  birthday: {
+    type: Date,
     required: true,
   },
   phone: {
     type: String,
     required: true,
-    trim: true,
+    validate(value) {
+      if (!validator.isMobilePhone(value, "en-US")) {
+        throw new Error("Please provide a valid phone number.");
+      }
+    },
   },
   location: {
     type: String,
