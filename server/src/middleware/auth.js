@@ -14,6 +14,8 @@ const auth = async (req, res, next) => {
       throw new Error("No User");
     }
 
+    console.log(user);
+
     req.token = token;
     req.user = user;
 

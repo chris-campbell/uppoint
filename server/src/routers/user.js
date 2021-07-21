@@ -8,11 +8,15 @@ router.get("/api", (req, res) => {
 });
 
 router.post("/users/login", async (req, res) => {
+  console.log(req.body.email);
+  console.log(req.body.password);
   try {
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
+
+    console.log(user);
     const token = await user.generateAuthToken();
 
     res.send({ user, token });

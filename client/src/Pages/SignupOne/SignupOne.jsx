@@ -30,7 +30,7 @@ const SignupOne = () => {
       body: JSON.stringify({ email: email }),
     };
 
-    //Performs check of email formatting
+    // Performs check of email formatting
     if (!validator.isEmail(email)) {
       setEmail("");
       document.getElementById("email-text-field").value = "";

@@ -155,6 +155,11 @@
   margin-bottom: 3rem;
 }
 
+.join__signup-form a {
+  list-style: none;
+  text-decoration: none;
+}
+
 .join__input-item {
   padding-bottom: 1rem !important;
 }
@@ -176,6 +181,12 @@
 }
 
 .join__submit-btn {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   padding: 1rem;
   border-radius: 30px;
   border: none !important;
@@ -185,6 +196,10 @@
   width: 200px;
   background: var(--primary-color-red);
   color: var(--accent-light);
+}
+
+.join__submit-btn:hover {
+  background: #aa1111;
 }
 
 @media (max-width: 968px) {
