@@ -22,6 +22,7 @@ const Router = () => {
               <Dashboard />
             </Route>
           )}
+
           <AuthRoutes
             exact
             path="/"
