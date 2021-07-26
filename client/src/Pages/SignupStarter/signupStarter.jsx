@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Textfield from "@material-ui/core/TextField";
 import "./css/signup_one.scss";
 import Logo from "./img/logo.svg";
@@ -6,80 +6,63 @@ import GoogleIcon from "./img/google_icon.svg";
 import { Link } from "react-router-dom";
 import validator from "validator";
 import ReactNotification from "react-notifications-component";
-import { store } from "react-notifications-component";
 import { useHistory } from "react-router-dom";
 import {
   uniqueEmailNotification,
   vaildEmailFormatNotification,
   addedDetailsNotication,
 } from "./notification";
+import axios from "axios";
+import AuthContext from "../../context/AuthContext";
 
-const SignupOne = () => {
+const SignupStarter = () => {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
+  const { getLoggedIn } = useContext(AuthContext);
+
   let history = useHistory();
 
   const emailUnique = async () => {
-    const headers = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: email }),
-    };
-
-    // Performs check of email formatting
     if (!validator.isEmail(email)) {
       setEmail("");
       document.getElementById("email-text-field").value = "";
       return vaildEmailFormatNotification();
     }
 
-    try {
-      // Check is email is unique in MongoDB
-      const response = await fetch("/users/check", headers);
-      const isUnique = await response.json();
+    const userEmailData = { email: email };
 
-      if (!isUnique) {
+    try {
+      const isUnique = await axios.post(
+        "/users/checkEmailUnique",
+        userEmailData
+      );
+
+      if (!isUnique.data) {
         return uniqueEmailNotification();
       }
 
-      // routes user to next page is all is valid
       history.push({
         pathname: "/signup-details",
         state: { firstname, lastname, email },
       });
+
+      getLoggedIn();
       addedDetailsNotication();
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleFirstNameChange = (e) => {
-    setFirstName(e.target.value);
-  };
-
-  const handleLastNameChange = (e) => {
-    setLastName(e.target.value);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  // Checks email is in a valid format
-  const isValidateEmail = async () => {
+  const isValidateEmail = () => {
     if (validator.isEmail(email)) {
-      console.log("valid result: ", validator.isEmail(email));
       return true;
     }
-    console.log("valid result: ", validator.isEmail(email));
+
     return false;
   };
 
-  // Check if all form field have a value
   const isFieldsEmpty = () => {
     if (firstname === "" || lastname === "" || email === "") {
       return false;
@@ -121,20 +104,20 @@ const SignupOne = () => {
                   label="First name"
                   variant="outlined"
                   className="join__input-item"
-                  onChange={handleFirstNameChange}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
                 <Textfield
                   label="Last name"
                   variant="outlined"
                   className="join__input-item"
-                  onChange={handleLastNameChange}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
                 <Textfield
                   label="Email"
                   variant="outlined"
                   className="join__input-item"
                   id="email-text-field"
-                  onChange={handleEmailChange}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 {isFieldsEmpty() ? (
                   <Link to="/">
@@ -159,4 +142,4 @@ const SignupOne = () => {
   );
 };
 
-export default SignupOne;
+export default SignupStarter;

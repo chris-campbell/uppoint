@@ -54,6 +54,7 @@
 .dash-area {
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 
 .dash-area .input-item {

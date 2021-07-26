@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from "react";
-import SignupOne from "./Pages/SignupOne/SignupOne";
-import SignupTwo from "./Pages/SignupTwo/signupTwo";
-import Dashboard from "./Pages/Dashboard/dashboard";
+// import SignupOne from "./Pages/SignupStarter/signupStarter";
+// import SignupTwo from "./Pages/SignupFinish/signupFinish";
+// import Dashboard from "./Pages/Dashboard/dashboard";
 import Login from "./Pages/Login/login";
+import axios from "axios";
+import { AuthContextProvider } from "./context/AuthContext";
+import { CurrentUserContextProvider } from "./context/CurrentUserContext";
 
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Router from "./Router";
 
+axios.defaults.withCredentials = true;
 function App() {
-  // const [data, setData] = useState(null);
-
-  // useEffect(() => {
-  //   fetch("/api")
-  //     .then((res) => res.json())
-  //     .then((data) => setData(data.message));
-  // }, []);
   return (
-    <div className="App">
-      <Router>
-        <Switch>
-          <Route path="/" exact component={SignupOne} />
-          <Route path="/signup-details" component={SignupTwo} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/login" component={Login} />
-        </Switch>
-      </Router>
-    </div>
+    <AuthContextProvider>
+      <CurrentUserContextProvider>
+        <Router />
+      </CurrentUserContextProvider>
+    </AuthContextProvider>
   );
 }
 

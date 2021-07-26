@@ -1,6 +1,7 @@
+import dotenv from "dotenv";
+
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { store } from "react-notifications-component";
 import ReactNotification from "react-notifications-component";
 import NumberFormat from "react-number-format";
 import DateFnsUtils from "@date-io/date-fns";
@@ -11,7 +12,7 @@ import Textfield from "@material-ui/core/TextField";
 import {
   newAccountNotification,
   allFieldsErrorNotification,
-} from "../SignupOne/notification";
+} from "../SignupStarter/notification";
 import "./css/materialForm.css";
 import "./css/signup_two.scss";
 import Avatar from "./img/avatar.svg";
@@ -19,55 +20,65 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from "react-places-autocomplete";
+import axios from "axios";
 
-const SignupTwo = (props) => {
+const SignupFinish = (props) => {
   const [mobile, setMobile] = useState("");
-  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("");
   const [selectedDate, handleDateChange] = useState(new Date());
+  const [coordinates, setCoordinates] = useState({});
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
 
   const { firstname, lastname, email } = props.location.state;
 
+  useEffect(() => {
+    setFirstName(firstname);
+    setLastName(lastname);
+    setEmailAddress(email);
+  }, []);
+
   const handleSelect = async (value) => {
-    setLocation(value);
+    const geo = await geocodeByAddress(value);
+    const latlng = await getLatLng(geo[0]);
+
+    setCoordinates(latlng);
+    setAddress(value);
   };
 
   let history = useHistory();
 
   const creatUser = async () => {
-    fetch("/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const userData = {
+      firstName: firstName,
+      lastName: lastName,
+      email: emailAddress,
+      hashedPassword: password,
+      gender: gender,
+      birthday: selectedDate,
+      phone: mobile,
+      location: {
+        address: address,
+        lat: coordinates.lat,
+        lng: coordinates.lng,
       },
-      body: JSON.stringify({
-        firstName: firstname.toLowerCase(),
-        lastName: lastname.toLowerCase(),
-        email: email.toLowerCase(),
-        password: password,
-        gender: gender,
-        birthday: selectedDate,
-        phone: mobile,
-        location: location,
-      }),
-    })
-      .then((data) => data.json())
-      .then((result) => {
-        if (!result.user) {
-          return allFieldsErrorNotification(result.error);
-        }
-        console.log("Then", result);
-        // setPassword("");
-        history.push({
-          pathname: "/dashboard",
-          state: { firstname: firstname, flag: true },
-        });
-        newAccountNotification();
-      })
-      .catch((e) => {
-        alert(e);
-      });
+    };
+
+    const user = await axios.post("/users", userData, {
+      withCredentials: true,
+    });
+
+    console.log(user.data);
+
+    if (!user) {
+      return console.log("invalid result");
+    }
+
+    history.push("/dashboard");
+    newAccountNotification();
   };
 
   return (
@@ -79,7 +90,7 @@ const SignupTwo = (props) => {
             <div className="signup-two__additional-details">
               <div className="signup-two__additional-details-wrapper">
                 <h2 className="signup-two__sub-title">
-                  Hey {firstname.charAt(0).toUpperCase() + firstname.slice(1)},
+                  {/* Hey {firstName.charAt(0).toUpperCase() + firstName.slice(1)}, */}
                 </h2>
                 <h1 className="signup-two__title">Add Details</h1>
                 <div className="signup-two__male-container">
@@ -169,8 +180,8 @@ const SignupTwo = (props) => {
                     <div className="signup-two__location details-input">
                       <label>Location</label>
                       <PlacesAutocomplete
-                        value={location}
-                        onChange={setLocation}
+                        value={address}
+                        onChange={setAddress}
                         onSelect={handleSelect}
                       >
                         {({
@@ -213,7 +224,7 @@ const SignupTwo = (props) => {
                         label="Select image"
                         variant="outlined"
                         className="input-item"
-                        onChange={(e) => setLocation(e)}
+                        onChange={(e) => setAddress(e)}
                       />
                     </div>
                     <div className="signup-two__password details-input">
@@ -254,13 +265,4 @@ const SignupTwo = (props) => {
   );
 };
 
-export default SignupTwo;
-
-// console.log(response.status);
-// if (response.status !== 201) {
-//   console.log(response);
-// }
-
-// console.log("Send to Dash");
-
-// history.push("/dashboard");
+export default SignupFinish;

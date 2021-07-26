@@ -1,48 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+
 import { useHistory } from "react-router";
+import axios from "axios";
 import "./css/materialForm.css";
 import Logo from "./img/logo.svg";
 import "./css/login.css";
+import AuthContext from "../../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    const user = localStorage;
-    console.log(user);
-  }, []);
+  const { getLoggedIn } = useContext(AuthContext);
 
   let history = useHistory();
 
   const loginUser = async (e) => {
     e.preventDefault();
 
-    const headers = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const userCred = {
         email: email,
         password: password,
-      }),
-    };
+      };
 
-    try {
-      const response = await fetch("/users/login", headers);
-      console.log(response);
-      const user = await response.json();
+      await axios.post("/users/login", userCred, {
+        withCredentials: true,
+      });
 
-      if (!user) {
-        return console.log("No such users in system!");
-      }
+      // if (!user) {
+      //   return console.log("No such users in system!");
+      // }
 
+      getLoggedIn();
       history.push({
         pathname: "/dashboard",
       });
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
