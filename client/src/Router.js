@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/Navbar";
 import AuthContext from "./context/AuthContext";
-import Dashboard from "./Pages/Dashboard/Dashboard";
-import Login from "./Pages/Login/Login";
-import SignupFinish from "./Pages/SignupFinish/SignupFinish";
-import SignupStarter from "./Pages/SignupStarter/SignupStarter";
-import AuthRoutes from "./components/AuthRoutes";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Login from "./pages/Login/Login";
+import SignupFinish from "./pages/SignupFinish/SignupFinish";
+import SignupStarter from "./pages/SignupStarter/SignupStarter";
+import AuthRoutes from "./components/auth/AuthRoutes";
 
 const Router = () => {
   const { loggedIn } = useContext(AuthContext);
