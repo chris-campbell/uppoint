@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
 import AuthContext from "./context/AuthContext";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Login from "./pages/Login/Login";
-import SignupFinish from "./pages/SignupFinish/SignupFinish";
-import SignupStarter from "./pages/SignupStarter/SignupStarter";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Login from "./pages/login/Login";
+import SignupFinish from "./pages/signupFinish/SignupFinish";
+import SignupStarter from "./pages/signupStarter/SignupStarter";
 import AuthRoutes from "./components/auth/AuthRoutes";
 
 const Router = () => {

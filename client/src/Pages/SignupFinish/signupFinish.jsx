@@ -12,7 +12,7 @@ import Textfield from "@material-ui/core/TextField";
 import {
   newAccountNotification,
   allFieldsErrorNotification,
-} from "../SignupStarter/notification";
+} from "../signupStarter/notification";
 import "./css/materialForm.css";
 import "./css/signup_two.scss";
 import Avatar from "./img/avatar.svg";
