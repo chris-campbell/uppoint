@@ -1,54 +1,64 @@
 import express from "express";
-import User from "../models/user.js";
+import User from "../models/userModel.js";
 import auth from "../middleware/auth.js";
+import jwt from "jsonwebtoken";
 const router = express.Router();
 
-router.get("/api", (req, res) => {
-  res.status(200).json({ message: "Hello from server!" });
+router.get("/users", async (req, res) => {
+  const users = await User.find({});
+  return res.send(users);
 });
 
+// [POST] LOGIN USER
 router.post("/users/login", async (req, res) => {
-  console.log(req.body.email);
-  console.log(req.body.password);
+  const { email, password } = req.body;
   try {
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
 
-    console.log(user);
     const token = await user.generateAuthToken();
 
-    res.send({ user, token });
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+      })
+      .send();
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-router.post("/users/check", async (req, res) => {
+router.post("/users/checkEmailUnique", async (req, res) => {
   try {
-    console.log(req.body);
     const user = await User.findOne({ email: req.body.email });
-    console.log(user);
+
     if (user) {
-      return res.send(false);
+      return res.json(false);
     }
 
-    res.send(true);
-  } catch (error) {
-    res.status(500).send(error);
+    res.json(true);
+  } catch (err) {
+    res.status(500).json({ errorMessage: "Server Issue" });
   }
 });
 
-// [POST] Create single user in DB
+// [POST] CREATE USER AND ADD TOKEN TO BROWSER
 router.post("/users", async (req, res) => {
   const user = User(req.body);
+  console.log(user);
   try {
     await user.save();
 
     const token = await user.generateAuthToken();
 
-    res.status(201).send({ user, token });
+    res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+      })
+      .send();
   } catch (error) {
     console.log(error);
     res.status(400).send({ error: error.message });
@@ -57,32 +67,18 @@ router.post("/users", async (req, res) => {
 
 // [GET] Retrieve user profile
 router.get("/users/me", auth, async (req, res) => {
+  console.log(req.user);
   res.send(req.user);
 });
 
-// [POST] Log user out
-router.post("/users/logout", auth, async (req, res) => {
-  try {
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
-
-    await req.user.save();
-    res.send("User Logged out!");
-  } catch (error) {
-    res.status(500);
-  }
-});
-
-// [POST] Logout all
-router.post("/users/logoutAll", auth, async (req, res) => {
-  try {
-    req.user.tokens = [];
-    await req.user.save();
-    res.send("All users logged out");
-  } catch (error) {
-    res.status(500).send("Something went wrong");
-  }
+// [POST] LOGOUT USER TOKEN FROM BROWSER
+router.get("/users/logout", auth, async (req, res) => {
+  res
+    .cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+    .send();
 });
 
 // [GET] Retrieve single user from DB
@@ -150,4 +146,47 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
+router.get("/loggedIn", (req, res) => {
+  try {
+    const token = req.cookies.token;
+    console.log("loggedIn", token);
+
+    if (!token) return res.json(false);
+
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    res.send(true);
+  } catch (error) {
+    res.json(false);
+  }
+});
+
+router.post("/send", auth, async (req, res) => {
+  try {
+    const currentUser = await User.findOne({ _id: req.user });
+    const alert = {
+      currentUserId: currentUser._id,
+      firstname: currentUser.firstName,
+      lastname: currentUser.lastName,
+      address: currentUser.address,
+    };
+
+    const user = await User.findOne({ _id: req.body[0]._id });
+
+    user.alerts = user.alerts.concat({ alert });
+    await user.save();
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+
+router.get("/currentUser", auth, async (req, res) => {
+  const currentUserId = req.user;
+  try {
+    const currentUser = await User.findOne({ _id: currentUserId.toString() });
+    res.json(currentUser);
+  } catch (error) {
+    res.status(500).send();
+  }
+});
 export default router;

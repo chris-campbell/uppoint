@@ -3,6 +3,19 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const coordinatesSchema = new mongoose.Schema({
+  address: String,
+  lat: String,
+  lng: String,
+});
+
+const friendAlertSchema = new mongoose.Schema({
+  currentUserId: String,
+  firstname: String,
+  lastname: String,
+  address: String,
+});
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -25,7 +38,7 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
-  password: {
+  hashedPassword: {
     type: String,
     required: true,
     minLength: 6,
@@ -49,18 +62,17 @@ const userSchema = new mongoose.Schema({
     },
   },
   location: {
-    type: String,
+    type: coordinatesSchema,
     required: true,
-    trim: true,
   },
+
   image: {
     type: String,
   },
-  tokens: [
+  alerts: [
     {
-      token: {
-        type: String,
-        required: true,
+      alert: {
+        type: friendAlertSchema, // current user
       },
     },
   ],
@@ -68,7 +80,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.toJSON = function () {
   const user = this;
-  console.log("toJSON ==> ", user);
   const userObject = user.toObject();
   delete userObject.password;
   delete userObject.tokens;
@@ -78,23 +89,22 @@ userSchema.methods.toJSON = function () {
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
 
-  const token = jwt.sign({ _id: user._id.toString() }, "mercibunny");
+  const token = jwt.sign({ user: user._id.toString() }, process.env.JWT_SECRET);
 
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
+  console.log(process.env.JWT_SECRET);
 
   return token;
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
-  console.log("FindbyCred - email: ", email);
   const user = await User.findOne({ email });
-  console.log("FindByCred: ", user);
+  // console.log(user);
   if (!user) {
     throw new Error("Unable to login");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.hashedPassword);
+  console.log(isMatch);
 
   if (!isMatch) {
     throw new Error("Unable to login");
@@ -105,9 +115,8 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
 userSchema.pre("save", async function (next) {
   const user = this;
-
-  if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
+  if (user.isModified("hashedPassword")) {
+    user.hashedPassword = await bcrypt.hash(user.hashedPassword, 8);
   }
 
   next();
