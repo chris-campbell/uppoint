@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import AuthContext from "./context/AuthContext";
 import Dashboard from "./Pages/Dashboard/Dashboard";
-import Login from "./Pages/Login/login";
-import SignupFinish from "./Pages/SignupFinish/signupFinish";
-import SignupStarter from "./Pages/SignupStarter/signupStarter";
+import Login from "./Pages/Login/Login";
+import SignupFinish from "./Pages/SignupFinish/SignupFinish";
+import SignupStarter from "./Pages/SignupStarter/SignupStarter";
 import AuthRoutes from "./components/AuthRoutes";
 
 const Router = () => {

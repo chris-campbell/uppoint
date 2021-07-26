@@ -27,11 +27,6 @@ const Login = () => {
       await axios.post("/users/login", userCred, {
         withCredentials: true,
       });
-
-      // if (!user) {
-      //   return console.log("No such users in system!");
-      // }
-
       getLoggedIn();
       history.push({
         pathname: "/dashboard",
