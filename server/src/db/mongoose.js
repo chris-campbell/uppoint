@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
+require("dotenv").config;
+
+const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MDB_CONNECTION_URL, {
   useNewUrlParser: true,

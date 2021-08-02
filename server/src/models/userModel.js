@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import validator from "validator";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+const mongoose = require("mongoose");
+const validator = require("validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const coordinatesSchema = new mongoose.Schema({
   address: String,
@@ -69,6 +69,9 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String,
   },
+  socketId: {
+    type: String,
+  },
   alerts: [
     {
       alert: {
@@ -91,20 +94,16 @@ userSchema.methods.generateAuthToken = async function () {
 
   const token = jwt.sign({ user: user._id.toString() }, process.env.JWT_SECRET);
 
-  console.log(process.env.JWT_SECRET);
-
   return token;
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
-  // console.log(user);
   if (!user) {
     throw new Error("Unable to login");
   }
 
   const isMatch = await bcrypt.compare(password, user.hashedPassword);
-  console.log(isMatch);
 
   if (!isMatch) {
     throw new Error("Unable to login");
@@ -124,4 +123,4 @@ userSchema.pre("save", async function (next) {
 
 const User = mongoose.model("User", userSchema);
 
-export default User;
+module.exports = User;

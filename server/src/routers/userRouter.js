@@ -1,7 +1,8 @@
-import express from "express";
-import User from "../models/userModel.js";
-import auth from "../middleware/auth.js";
-import jwt from "jsonwebtoken";
+const express = require("express");
+const User = require("../models/userModel");
+const auth = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
+
 const router = express.Router();
 
 router.get("/users", async (req, res) => {
@@ -24,7 +25,7 @@ router.post("/users/login", async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
       })
-      .send();
+      .send({ user, token });
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -47,7 +48,7 @@ router.post("/users/checkEmailUnique", async (req, res) => {
 // [POST] CREATE USER AND ADD TOKEN TO BROWSER
 router.post("/users", async (req, res) => {
   const user = User(req.body);
-  console.log(user);
+
   try {
     await user.save();
 
@@ -67,7 +68,6 @@ router.post("/users", async (req, res) => {
 
 // [GET] Retrieve user profile
 router.get("/users/me", auth, async (req, res) => {
-  console.log(req.user);
   res.send(req.user);
 });
 
@@ -149,7 +149,6 @@ router.delete("/users/:id", async (req, res) => {
 router.get("/loggedIn", (req, res) => {
   try {
     const token = req.cookies.token;
-    console.log("loggedIn", token);
 
     if (!token) return res.json(false);
 
@@ -182,6 +181,7 @@ router.post("/send", auth, async (req, res) => {
 
 router.get("/currentUser", auth, async (req, res) => {
   const currentUserId = req.user;
+  console.log(currentUserId);
   try {
     const currentUser = await User.findOne({ _id: currentUserId.toString() });
     res.json(currentUser);
@@ -189,4 +189,19 @@ router.get("/currentUser", auth, async (req, res) => {
     res.status(500).send();
   }
 });
-export default router;
+
+router.get("/currentUserId", auth, (req, res) => {
+  try {
+    const currentUserId = req.user;
+    console.log(currentUserId);
+    res.send(currentUserId);
+  } catch (error) {
+    res.status(500).send();
+  }
+});
+
+router.patch("/saveSocketId", async (req, res) => {
+  console.log("hello");
+});
+
+module.exports = router;
