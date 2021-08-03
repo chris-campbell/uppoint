@@ -69,13 +69,10 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-  socketId: {
-    type: String,
-  },
   alerts: [
     {
       alert: {
-        type: friendAlertSchema, // current user
+        type: friendAlertSchema,
       },
     },
   ],

@@ -17,57 +17,43 @@ const io = require("socket.io")(http, {
   },
 });
 
+// Core Application middleware
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    credentials: true,
-  })
-);
-
+// Socket IO middleware
 io.use(async (socket, next) => {
   try {
     const token = JSON.parse(socket.handshake.query.userId).token;
-    const payload = await jwt.verify(token, process.env.JWT_SECRET);
-    socket.id = payload.user;
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    socket.id = decoded.user;
     next();
   } catch (error) {}
 });
 
+// Socket connect
 io.on("connection", async (socket) => {
   console.log("New user connect with ID: " + socket.id);
 
-  const user = JSON.parse(socket.handshake.query.userId).user;
-  const { firstName, lastName, email, gender } = user;
+  // Get current user object from frontend
+  const currentUser = JSON.parse(socket.handshake.query.userId).user;
 
-  const alert = {
-    firstName,
-    lastName,
-    email,
-    gender,
-  };
+  // Socket implementations
+  require("./src/socketServices/send")(socket, currentUser);
+  require("./src/socketServices/getUsersFromDB")(io, socket);
 
-  socket.on("send", (list) => {
-    console.log("from the socker", list[0]._id);
-    socket.to(list[0]._id).emit("message", alert);
-  });
-
-  socket.on("get_users_list_from_db", async () => {
-    const usersList = await User.find({});
-    io.sockets.emit("store_list_to_state", usersList);
-  });
+  // On Socket disconnect
   socket.on("disconnect", () => {
-    console.log("Disconnected: " + socket.userId);
+    console.log("Disconnected: " + socket.id);
   });
 });
 
+// Routers
 app.use(userRouter);
 
-// PORT DECLARATION
+// Server
 const PORT = process.env.PORT || 4000;
-
 http.listen(PORT, () => {
   console.log(
     "Connection success: ",
