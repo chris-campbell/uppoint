@@ -2,10 +2,13 @@ const express = require("express");
 const userRouter = require("./src/routers/userRouter.js");
 const cookieParser = require("cookie-parser");
 const User = require("./src/models/userModel");
+const fileUpload = require("express-fileupload");
+var multipart = require("connect-multiparty");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 require("./src/db/mongoose.js");
+const helmet = require("helmet");
 
 // Initializing the server
 const app = require("express")();
@@ -17,9 +20,42 @@ const io = require("socket.io")(http, {
 });
 
 // Core Application middleware
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
+app.use(fileUpload());
+
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       useDefaults: false,
+//       directives: {
+//         defaultSrc: ["self"],
+//       },
+//     },
+//   })
+// );
+
+app.post("/upload", function (req, res) {
+  let sampleFile;
+  let uploadPath;
+
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("No files were uploaded.");
+  }
+
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  sampleFile = req.files.sampleFile;
+  uploadPath = __dirname + "/public/images/" + sampleFile.name;
+
+  // Use the mv() method to place the file somewhere on your server
+  sampleFile.mv(uploadPath, function (err) {
+    if (err) return res.status(500).send(err);
+
+    res.send();
+  });
+});
 
 // Socket IO middleware
 io.use(async (socket, next) => {

@@ -65,7 +65,6 @@ const userSchema = new mongoose.Schema({
     type: coordinatesSchema,
     required: true,
   },
-
   image: {
     type: String,
   },
@@ -73,7 +72,7 @@ const userSchema = new mongoose.Schema({
     {
       alert: {
         type: friendAlertSchema,
-        viewed: Boolean,
+        flagged: { type: Boolean, default: true },
       },
     },
   ],
