@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Textfield from "@material-ui/core/TextField";
 import "./css/signup_one.scss";
 import Logo from "./img/logo.svg";
@@ -11,7 +11,7 @@ import {
   uniqueEmailNotification,
   vaildEmailFormatNotification,
   addedDetailsNotication,
-} from "./notification";
+} from "./js/notification";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 
@@ -20,7 +20,13 @@ const SignupStarter = () => {
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
 
-  const { getLoggedIn } = useContext(AuthContext);
+  useEffect(() => {
+    if (loggedIn) {
+      history.push("/dashboard");
+    }
+  });
+
+  const { getLoggedIn, loggedIn } = useContext(AuthContext);
 
   let history = useHistory();
 
@@ -76,7 +82,7 @@ const SignupStarter = () => {
       <div className="join__wrapper">
         <div className="join__split">
           <div className="join__signup">
-            <img src={Logo} />
+            <img alt="logo" src={Logo} />
             <div class="join__signup-copy-wrapper">
               <h1>Join the search!</h1>
               <p>
@@ -94,7 +100,7 @@ const SignupStarter = () => {
                   onClick={() => isValidateEmail()}
                   class="google-icon-wrapper"
                 >
-                  <img src={GoogleIcon} />
+                  <img alt="google-icon" src={GoogleIcon} />
                   <span>Sign in with Google</span>
                 </div>
               </div>

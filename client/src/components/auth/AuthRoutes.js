@@ -1,25 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Redirect, Route } from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
 
-const AuthRoutes = ({ component: Component, auth, ...rest }) => {
+const AuthRoutes = ({ children, ...rest }) => {
+  const { loggedIn } = useContext(AuthContext);
   return (
     <Route
       {...rest}
-      render={(props) => {
-        // Load Auth Component if not loggedIn
-        if (!auth) return <Component {...rest} {...props} />;
-
-        return (
+      render={({ location }) =>
+        loggedIn ? (
+          children
+        ) : (
           <Redirect
             to={{
-              pathname: "/dashboard",
-              state: {
-                from: props.location,
-              },
+              pathname: "/login",
+              state: { from: location },
             }}
           />
-        );
-      }}
+        )
+      }
     />
   );
 };

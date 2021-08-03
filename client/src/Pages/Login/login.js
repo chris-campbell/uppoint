@@ -1,19 +1,24 @@
-import React, { useState, useContext } from "react";
-
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
+import AuthContext from "../../context/AuthContext";
 import axios from "axios";
-import "./css/materialForm.css";
 import Logo from "./img/logo.svg";
 import "./css/login.css";
-import AuthContext from "../../context/AuthContext";
+import "./css/materialForm.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { getLoggedIn } = useContext(AuthContext);
-
   let history = useHistory();
+
+  const { getLoggedIn, loggedIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (loggedIn) {
+      history.push("/dashboard");
+    }
+  });
 
   const loginUser = async (e) => {
     e.preventDefault();
@@ -24,13 +29,18 @@ const Login = () => {
         password: password,
       };
 
-      await axios.post("/users/login", userCred, {
-        withCredentials: true,
-      });
+      const userObj = await axios.post(
+        "http://localhost:4000/users/login",
+        userCred,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Store user object to local storage
+      localStorage.setItem("user", JSON.stringify(userObj.data));
       getLoggedIn();
-      history.push({
-        pathname: "/dashboard",
-      });
+      history.push("/dashboard");
     } catch (error) {
       console.log(error.message);
     }
@@ -39,7 +49,7 @@ const Login = () => {
   return (
     <div className="login">
       <div className="login__wrapper">
-        <img src={Logo} className="login__logo" />
+        <img alt="logo" src={Logo} className="login__logo" />
 
         <form className="login__form">
           <label class="pure-material-textfield-outlined">

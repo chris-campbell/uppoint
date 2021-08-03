@@ -13,8 +13,8 @@ function AuthContextProvider(props) {
     setLoggedIn(loggedInStatus.data);
   }
 
-  useEffect(() => {
-    getLoggedIn();
+  useEffect(async () => {
+    await getLoggedIn();
   }, []);
 
   return (

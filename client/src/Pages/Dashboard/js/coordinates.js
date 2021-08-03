@@ -1,3 +1,4 @@
+// Returns geo coors for given user
 export let getLocationPromise = new Promise((resolve, reject) => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {

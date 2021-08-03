@@ -7,36 +7,31 @@ import Login from "./pages/login/Login";
 import SignupFinish from "./pages/signupFinish/SignupFinish";
 import SignupStarter from "./pages/signupStarter/SignupStarter";
 import AuthRoutes from "./components/auth/AuthRoutes";
+import NotFound404 from "./pages/404/NotFound404";
 
 const Router = () => {
   const { loggedIn } = useContext(AuthContext);
+
   return (
     <BrowserRouter>
-      <Navbar />
+      {loggedIn && <Navbar />}
 
       <Switch>
-        <>
-          {console.log("LOGGEDIN", loggedIn)}
-          {loggedIn && (
-            <Route exact path="/dashboard">
-              <Dashboard />
-            </Route>
-          )}
-
-          <AuthRoutes
-            exact
-            path="/"
-            auth={loggedIn}
-            component={SignupStarter}
-          />
-          <AuthRoutes
-            exact
-            path="/signup-details"
-            auth={loggedIn}
-            component={SignupFinish}
-          />
-          <AuthRoutes exact path="/login" auth={loggedIn} component={Login} />
-        </>
+        <Route exact path="/">
+          <SignupStarter />
+        </Route>
+        <Route path="/signup-details">
+          <SignupFinish />
+        </Route>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <AuthRoutes path="/dashboard">
+          <Dashboard />
+        </AuthRoutes>
+        <Route path="*">
+          <NotFound404 />
+        </Route>
       </Switch>
     </BrowserRouter>
   );

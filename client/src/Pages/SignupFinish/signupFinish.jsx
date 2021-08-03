@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import ReactNotification from "react-notifications-component";
 import NumberFormat from "react-number-format";
@@ -8,11 +6,9 @@ import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import Textfield from "@material-ui/core/TextField";
+import AuthContext from "../../context/AuthContext";
 
-import {
-  newAccountNotification,
-  allFieldsErrorNotification,
-} from "../signupStarter/notification";
+import { newAccountNotification } from "../signupStarter/js/notification";
 import "./css/materialForm.css";
 import "./css/signup_two.scss";
 import Avatar from "./img/avatar.svg";
@@ -23,6 +19,14 @@ import PlacesAutocomplete, {
 import axios from "axios";
 
 const SignupFinish = (props) => {
+  const { loggedIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (loggedIn) {
+      history.push("/dashboard");
+    }
+  });
+
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -39,6 +43,7 @@ const SignupFinish = (props) => {
     setFirstName(firstname);
     setLastName(lastname);
     setEmailAddress(email);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSelect = async (value) => {
@@ -243,7 +248,7 @@ const SignupFinish = (props) => {
             </div>
             <div className="signup-two__copy">
               <div class="signup-two__copy-wrapper">
-                <img src={Avatar} />
+                <img alt="push-icon" src={Avatar} />
                 <h3>Provide some details about yourself</h3>
                 <p>
                   Fusce vitae iaculis lorem, eu sodales metus. Sed pellentesque

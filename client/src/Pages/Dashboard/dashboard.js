@@ -1,80 +1,76 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import ReactNotification from "react-notifications-component";
-import CurrentUserContext from "../../context/CurrentUserContext";
 import AuthContext from "../../context/AuthContext";
+import haversine from "haversine";
+import SocketContext from "../../context/Socket";
 import { getLocationPromise } from "./js/coordinates.js";
 import "./css/dashboard.css";
 import "./css/materialForm.css";
-import haversine from "haversine";
-import axios from "axios";
 
 const Dashboard = () => {
-  const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [sendList, setSendList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentUserLocation, setCurrentUserLocation] = useState({});
+  const [alerts, setAlerts] = useState([]);
 
   // Function to get user current logged in status
   const { getLoggedIn } = useContext(AuthContext);
-  const { currentUser } = useContext(CurrentUserContext);
+  const { socket } = useContext(SocketContext);
 
-  /**
-   * Current user
-   * Get CurrentUser object to use on DOM
-   */
-  useEffect(async () => {
-    const response = await axios.get("/currentUser");
-    // setCurrentUser(response.data);
+  // Store Users Alerts to memory
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem("user")) !== null) {
+      setAlerts(JSON.parse(localStorage.getItem("user")).user.alerts);
+    }
   }, []);
 
-  /**
-   * User Collection
-   * Retrieves list of users from MongoDB collection
-   * Used to provide provide user suggestions to form
-   */
-  useEffect(async () => {
-    const users = await axios.get("http://localhost:3000/users");
-    setContacts(users.data);
+  // Get users list and store to memory
+  useEffect(() => {
+    socket.emit("GET_USERS_FROM_DB");
+    socket.on("STORE_USER_LIST_TO_MEMORY", async (userList) => {
+      setUsers(userList);
+    });
   }, []);
 
-  /**
-   * Retreive Coordinate and set to state
-   */
+  // Manage bidirectional messages
+  useEffect(() => {
+    socket.on("MESSAGE", (message) => {
+      console.log(message);
+      // setMessage(message);
+    });
+  }, []);
+
+  // Retreive Coordinates and set to state
   useEffect(async () => {
     const coords = await getLocationPromise;
     setCurrentUserLocation(coords);
-    getLoggedIn();
+    await getLoggedIn();
   }, []);
 
-  /**
-   * Function Send
-   * Sends a list of users to server to send alerts to
-   */
-  const sendAlerts = async () => {
-    const response = await axios.post("http://localhost:4000/send", sendList);
-    console.log(response.data);
-  };
-
-  /**
-   * Iterates currentUsers alerts and display them via li
-   * elements.
-   */
+  // Render alerts in DOM
   const renderAlerts = () => {
-    if (currentUser.data)
-      return currentUser.data.alerts.map((alert, i) => {
-        console.log(alert.firstname);
+    if (alerts.length > 0)
+      return alerts.map((alert, i) => {
         return <li key={i}>{alert.alert.firstname}</li>;
       });
   };
 
+  // Sends a list of users to server to send alerts to
+  const sendAlerts = () => {
+    socket.emit("send", sendList);
+  };
+
   // Adds clicked user to send list
-  const getUser = (e) => {
+  const addToSendList = (e) => {
     const userId = e.currentTarget.getAttribute("data-id");
 
     // Gets user from fetched list retrieved from DB
-    const user = contacts.filter((user) => user._id === userId);
+    const user = users.filter((user) => user._id === userId);
+    console.log(user);
     const sendUsers = sendList.filter((user) => user._id === userId);
+    console.log(sendUsers);
 
     // Check if user already in send list
     if (sendUsers.length === 0) {
@@ -84,14 +80,14 @@ const Dashboard = () => {
       );
     }
 
-    console.log("User already in alert list (replace with alert");
+    // console.log("User already in alert list (replace with alert");
   };
 
   const searchHandler = (searchTerm) => {
     setSearchTerm(searchTerm);
 
     if (searchTerm !== "") {
-      const newContactList = contacts.filter((contact) => {
+      const newContactList = users.filter((contact) => {
         Object.values(contact);
         return Object.values(contact)
           .join(" ")
@@ -100,7 +96,7 @@ const Dashboard = () => {
       });
       setSearchResults(newContactList);
     } else {
-      setSearchResults(contacts);
+      setSearchResults(users);
     }
   };
 
@@ -128,7 +124,7 @@ const Dashboard = () => {
       <li
         data-id={result._id}
         key={result._id}
-        onClick={(e) => getUser(e)}
+        onClick={(e) => addToSendList(e)}
         className="user-result-"
       >
         {`${result.firstName} ${result.lastName}  ${distanceBetween(result)
@@ -160,7 +156,6 @@ const Dashboard = () => {
           <input
             id="search"
             ref={inputElement}
-            // className="input-item"
             value={searchTerm}
             onChange={getSearchTerm}
           />
@@ -179,8 +174,11 @@ const Dashboard = () => {
         <button onClick={sendAlerts} id="btn">
           Test
         </button>
+        <button onClick={() => renderAlerts} id="btn">
+          Render
+        </button>
         <div>
-          <ul>{!currentUser ? "...loading" : renderAlerts()}</ul>
+          <ul>{alerts.length > 0 ? renderAlerts() : "...loading"}</ul>
         </div>
       </main>
     </>
