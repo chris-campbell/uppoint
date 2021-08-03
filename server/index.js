@@ -6,7 +6,6 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 require("./src/db/mongoose.js");
-require("./sockets");
 
 // Initializing the server
 const app = require("express")();

@@ -73,6 +73,7 @@ const userSchema = new mongoose.Schema({
     {
       alert: {
         type: friendAlertSchema,
+        viewed: Boolean,
       },
     },
   ],

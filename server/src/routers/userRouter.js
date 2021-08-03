@@ -204,4 +204,8 @@ router.patch("/saveSocketId", async (req, res) => {
   console.log("hello");
 });
 
+router.post("/upload", function (req, res) {
+  console.log(req.files.foo); // the uploaded file object
+});
+
 module.exports = router;
