@@ -16,6 +16,7 @@ const http = require("http").createServer(app);
 const io = require("socket.io")(http, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST"],
   },
 });
 
@@ -60,8 +61,13 @@ app.post("/upload", function (req, res) {
 // Socket IO middleware
 io.use(async (socket, next) => {
   try {
-    const token = JSON.parse(socket.handshake.query.userId).token;
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    console.log(
+      "SERVER",
+      JSON.parse(socket.handshake.query.userData).userData.token
+    );
+    const token = JSON.parse(socket.handshake.query.userData).userData.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
     socket.id = decoded.user;
     next();
   } catch (error) {}
@@ -72,11 +78,36 @@ io.on("connection", async (socket) => {
   console.log("New user connect with ID: " + socket.id);
 
   // Get current user object from frontend
-  const currentUser = JSON.parse(socket.handshake.query.userId).user;
+  const currentUser = JSON.parse(socket.handshake.query.userData).userData;
 
-  // Socket implementations
+  // // console.log("@@@", currentUser);
+  // // Socket implementations
   require("./src/socketServices/send")(socket, currentUser);
   require("./src/socketServices/getUsersFromDB")(io, socket);
+
+  socket.on("STORE_ALERT_TO_DB", async (alert) => {
+    const { id, email, firstname, lastname, gender, location } = alert;
+
+    const storedAlert = {
+      currentUserId: id,
+      email: email,
+      firstname: firstname,
+      lastname: lastname,
+      gender: gender,
+      address: location,
+      viewed: false,
+    };
+
+    await User.findOneAndUpdate(
+      { _id: currentUser.id },
+      { $push: { alerts: { alert: storedAlert } } }
+    );
+
+    const user = await User.findOne({ _id: currentUser.id });
+    console.log("USERHER", user.alerts.length);
+
+    socket.emit("UPDATE_ALERT", user.alerts);
+  });
 
   // On Socket disconnect
   socket.on("disconnect", () => {

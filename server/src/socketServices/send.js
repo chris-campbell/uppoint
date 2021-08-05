@@ -1,13 +1,16 @@
 // Handles sending alert to specified socket ID
 module.exports = (client, currentUser) => {
   client.on("send", (list) => {
-    const { firstName, lastName, email, gender } = currentUser;
+    console.log("SEmD", currentUser);
+    const { id, firstname, lastname, email, gender, location } = currentUser;
 
     const alert = {
-      firstName,
-      lastName,
+      id,
       email,
+      firstname,
+      lastname,
       gender,
+      location,
     };
 
     if (!list.length > 0) return console.log("Send list empty");

@@ -45,6 +45,13 @@ router.post("/users/checkEmailUnique", async (req, res) => {
   }
 });
 
+router.get("/getAlerts", auth, async (req, res) => {
+  const userId = req.user;
+  const user = await User.findOne({ _id: userId });
+  const alerts = await user.alerts;
+  res.json(alerts);
+});
+
 // [POST] CREATE USER AND ADD TOKEN TO BROWSER
 router.post("/users", async (req, res) => {
   const user = User(req.body);
@@ -173,7 +180,7 @@ router.post("/send", auth, async (req, res) => {
     const user = await User.findOne({ _id: req.body[0]._id });
 
     user.alerts = user.alerts.concat({ alert });
-    await user.save();
+    // await user.save();
   } catch (error) {
     res.status(500).send();
   }

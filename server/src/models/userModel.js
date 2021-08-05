@@ -11,9 +11,12 @@ const coordinatesSchema = new mongoose.Schema({
 
 const friendAlertSchema = new mongoose.Schema({
   currentUserId: String,
+  email: String,
   firstname: String,
   lastname: String,
+  gender: String,
   address: String,
+  viewed: Boolean,
 });
 
 const userSchema = new mongoose.Schema({
@@ -72,7 +75,6 @@ const userSchema = new mongoose.Schema({
     {
       alert: {
         type: friendAlertSchema,
-        flagged: { type: Boolean, default: true },
       },
     },
   ],
