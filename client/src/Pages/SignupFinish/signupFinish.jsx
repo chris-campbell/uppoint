@@ -36,6 +36,7 @@ const SignupFinish = (props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
+  const [image, setImage] = useState({});
 
   const { firstname, lastname, email } = props.location.state;
 
@@ -43,8 +44,11 @@ const SignupFinish = (props) => {
     setFirstName(firstname);
     setLastName(lastname);
     setEmailAddress(email);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const imageUpload = (e) => {
+    setImage(e.target.files[0]);
+  };
 
   const handleSelect = async (value) => {
     const geo = await geocodeByAddress(value);
@@ -262,6 +266,7 @@ const SignupFinish = (props) => {
               >
                 Finish
               </button>
+              <img src={image} />
             </div>
           </div>
         </div>

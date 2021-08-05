@@ -20,9 +20,8 @@ const Router = () => {
         <Route exact path="/">
           <SignupStarter />
         </Route>
-        <Route path="/signup-details">
-          <SignupFinish />
-        </Route>
+        <Route path="/signup-details" component={SignupFinish} />
+
         <Route path="/login">
           <Login />
         </Route>

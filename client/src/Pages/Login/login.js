@@ -37,8 +37,20 @@ const Login = () => {
         }
       );
 
+      console.log(userObj);
+
+      const userData = {
+        id: userObj.data.user._id,
+        firstname: userObj.data.user.firstName,
+        lastname: userObj.data.user.lastName,
+        email: userObj.data.user.email,
+        gender: userObj.data.user.gender,
+        location: userObj.data.user.location,
+        token: userObj.data.token,
+      };
+
       // Store user object to local storage
-      localStorage.setItem("user", JSON.stringify(userObj.data));
+      localStorage.setItem("user", JSON.stringify({ userData }));
       getLoggedIn();
       history.push("/dashboard");
     } catch (error) {

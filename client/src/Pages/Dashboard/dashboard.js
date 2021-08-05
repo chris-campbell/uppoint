@@ -6,6 +6,9 @@ import SocketContext from "../../context/Socket";
 import { getLocationPromise } from "./js/coordinates.js";
 import "./css/dashboard.css";
 import "./css/materialForm.css";
+import AlertCard from "./alertCard/AlertCard";
+import axios from "axios";
+import { newAlertNotification } from "../signupStarter/js/notification";
 
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
@@ -14,17 +17,11 @@ const Dashboard = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [currentUserLocation, setCurrentUserLocation] = useState({});
   const [alerts, setAlerts] = useState([]);
+  const [alertMessage, setAlertMessage] = useState({});
 
   // Function to get user current logged in status
   const { getLoggedIn } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
-
-  // Store Users Alerts to memory
-  useEffect(() => {
-    if (JSON.parse(localStorage.getItem("user")) !== null) {
-      setAlerts(JSON.parse(localStorage.getItem("user")).user.alerts);
-    }
-  }, []);
 
   // Get users list and store to memory
   useEffect(() => {
@@ -36,13 +33,29 @@ const Dashboard = () => {
 
   // Manage bidirectional messages
   useEffect(() => {
-    socket.on("MESSAGE", (message) => {
-      console.log(message);
-      // setMessage(message);
+    socket.on("ALERT_MESSAGE", (message) => {
+      setAlertMessage(message.firstname);
+      if (message.firstname !== alertMessage) {
+        newAlertNotification(message.firstname);
+      }
+
+      socket.emit("STORE_ALERT_TO_DB", message);
     });
   }, []);
 
-  // Retreive Coordinates and set to state
+  useEffect(() => {
+    if (alerts.length <= 0) loadList();
+
+    socket.on("UPDATE_ALERT", (list) => {
+      setAlerts([...list]);
+    });
+  }, []);
+
+  const loadList = async () => {
+    const user = await axios.get("http://localhost:4000/getAlerts");
+    setAlerts(user.data);
+  };
+
   useEffect(async () => {
     const coords = await getLocationPromise;
     setCurrentUserLocation(coords);
@@ -51,10 +64,14 @@ const Dashboard = () => {
 
   // Render alerts in DOM
   const renderAlerts = () => {
-    if (alerts.length > 0)
-      return alerts.map((alert, i) => {
-        return <li key={i}>{alert.alert.firstname}</li>;
-      });
+    if (alerts.length > 0) {
+      return alerts
+        .filter((alert) => alert.alert.viewed === false)
+        .map((alert, i) => {
+          const { firstname, lastname } = alert.alert;
+          return <AlertCard firstname={firstname} lastname={lastname} />;
+        });
+    }
   };
 
   // Sends a list of users to server to send alerts to
@@ -68,9 +85,8 @@ const Dashboard = () => {
 
     // Gets user from fetched list retrieved from DB
     const user = users.filter((user) => user._id === userId);
-    console.log(user);
+
     const sendUsers = sendList.filter((user) => user._id === userId);
-    console.log(sendUsers);
 
     // Check if user already in send list
     if (sendUsers.length === 0) {
@@ -142,8 +158,8 @@ const Dashboard = () => {
 
   return (
     <>
+      <ReactNotification />
       <main className="dash-area">
-        <ReactNotification />
         <ul>
           {sendList.map((user) => (
             <li>
@@ -151,15 +167,17 @@ const Dashboard = () => {
             </li>
           ))}
         </ul>
+        <button onClick={sendAlerts} id="btn">
+          Test
+        </button>
 
-        <label class="pure-material-textfield-outlined">
+        <label id="search" class="pure-material-textfield-outlined">
           <input
-            id="search"
             ref={inputElement}
             value={searchTerm}
             onChange={getSearchTerm}
           />
-          <span>Enter location</span>
+          <span>e.g. john smith</span>
         </label>
 
         <div>
@@ -171,15 +189,12 @@ const Dashboard = () => {
             )}
           </ul>
         </div>
-        <button onClick={sendAlerts} id="btn">
-          Test
-        </button>
-        <button onClick={() => renderAlerts} id="btn">
-          Render
-        </button>
-        <div>
-          <ul>{alerts.length > 0 ? renderAlerts() : "...loading"}</ul>
-        </div>
+
+        <section>
+          <ul className="alerts-area">
+            {alerts.length > 0 ? renderAlerts() : "...loading"}
+          </ul>
+        </section>
       </main>
     </>
   );

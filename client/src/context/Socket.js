@@ -8,7 +8,7 @@ const SocketContextProvider = (props) => {
 
   const getSocket = async () => {
     const socket = socketIOClient("http://localhost:4000", {
-      query: { userId: localStorage.getItem("user") },
+      query: { userData: localStorage.getItem("user") },
     }).connect();
     setSocket(socket);
   };

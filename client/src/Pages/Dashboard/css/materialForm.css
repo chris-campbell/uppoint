@@ -1,3 +1,12 @@
+:root {
+  --primary-color-red: #eb4d4b;
+  --secondary-color: #f1c40f;
+  --accent-light: #fff;
+  --accent-dark: #707070;
+  --label-main: rgb(66, 66, 66);
+  --label-sub: rgb(115 115 115);
+}
+
 .pure-material-textfield-outlined {
   --pure-material-safari-helper1: rgb(
     var(--pure-material-primary-rgb, 33, 150, 243)
@@ -16,6 +25,7 @@
   font-size: 16px;
   line-height: 1.5;
   overflow: hidden;
+  border-color: var(--primary-color-red);
 }
 
 /* Input, Textarea */
@@ -24,19 +34,19 @@
   box-sizing: border-box;
   margin: 0;
   border: solid 1px; /* Safari */
-  border-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
-  border-top-color: transparent;
+  border-color: var(--primary-color-red);
+  border-top-color: var(--primary-color-red);
   border-radius: 4px;
   padding: 15px 13px 15px;
   width: 100%;
   height: inherit;
-  color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.87);
-  background-color: transparent;
+  color: var(--primary-color-red);
+  background-color: var(--primary-color-red);
   box-shadow: none; /* Firefox */
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-  caret-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+  caret-color: var(--primary-color-red);
   transition: border 0.2s, box-shadow 0.2s;
 }
 

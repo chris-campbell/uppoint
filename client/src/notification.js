@@ -16,22 +16,6 @@ export const uniqueEmailNotification = () => {
   });
 };
 
-export const newAlertNotification = (sender) => {
-  return store.addNotification({
-    title: `New alert from ${sender}.`,
-    message: "Alert back to say your okay",
-    type: "success",
-    insert: "top",
-    container: "top-right",
-    animationIn: ["animate__animated", "animate__fadeIn"],
-    animationOut: ["animate__animated", "animate__fadeOut"],
-    dismiss: {
-      duration: 5000,
-      onScreen: true,
-    },
-  });
-};
-
 export const allFieldsErrorNotification = (error) => {
   return store.addNotification({
     title: "All fields not filled in",

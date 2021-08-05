@@ -1,0 +1,65 @@
+:root {
+  --primary-color-red: #eb4d4b;
+  --secondary-color: #f1c40f;
+  --accent-light: #fff;
+  --accent-dark: #707070;
+  --label-main: rgb(66, 66, 66);
+  --label-sub: rgb(115 115 115);
+}
+
+.alerts-area {
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.card {
+  width: 21%;
+  border: 0.5px solid lightgray;
+  margin-right: 1.5%;
+  margin-left: 1.5%;
+  margin-bottom: 15px;
+}
+
+.card-read-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 7px;
+  padding-right: 7px;
+}
+
+.card-read-indicator {
+  background-color: var(--primary-color-red);
+  width: 11px;
+  height: 5px;
+  border-radius: 50px;
+}
+
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+}
+
+.card-wrapper img {
+  padding-bottom: 20px;
+  width: 88px;
+}
+
+.card-title {
+  padding-bottom: 10px;
+}
+
+.card-distance {
+  margin-bottom: 10px;
+}
+
+.alert-btn {
+  border: none;
+  padding: 5px 20px;
+  border-radius: 5px;
+  background-color: var(--primary-color-red);
+  color: var(--accent-light);
+}

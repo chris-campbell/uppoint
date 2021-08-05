@@ -33,9 +33,10 @@ function Navbar() {
           <li>
             <img className="avatar" alt="user-avatar" src={Avatar} />
           </li>
-          <li className="username">Dennis Bishop</li>
+          <li className="username">
+            {JSON.parse(localStorage.getItem("user")).userData.firstname}
+          </li>
           <li>
-            {/* <button onClick={logOut}>Logout</button> */}
             <Link onClick={logOut} to="/login">
               Logout
             </Link>
