@@ -8,53 +8,75 @@ import "./css/dashboard.css";
 import "./css/materialForm.css";
 import AlertCard from "./alertCard/AlertCard";
 import axios from "axios";
-import { newAlertNotification } from "../signupStarter/js/notification";
+import {
+  newAlertNotification,
+  userAlreadyInListNotification,
+  sendListFullNotification,
+} from "../../utils/notification";
+import Pagination from "../../components/Pagination";
+import { UserContext } from "../../context/UserContext";
+import Sender from "./img/sender.svg";
+import Spinner from "./img/spinner.svg";
+import { capFirstChar } from '../../utils/commons';
 
 const Dashboard = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [sendList, setSendList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentUserLocation, setCurrentUserLocation] = useState({});
-  const [alerts, setAlerts] = useState([]);
   const [alertMessage, setAlertMessage] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [alertsPerPage] = useState(8);
+  const [showSuggestionArea, setShowSuggestionArea] = useState(false);
+
 
   // Function to get user current logged in status
   const { getLoggedIn } = useContext(AuthContext);
+  const { user, setUser } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
+  
+  const inputElement = useRef("");
+  const suggestionBox = useRef("");
 
-  // Get users list and store to memory
+  useEffect(async () => {
+    await updateCurrentUser();
+    setIsLoading(false);
+  }, []);
+
   useEffect(() => {
-    socket.emit("GET_USERS_FROM_DB");
-    socket.on("STORE_USER_LIST_TO_MEMORY", async (userList) => {
-      setUsers(userList);
+    socket.on("update_user", async () => {
+      await updateCurrentUser();
     });
   }, []);
 
-  // Manage bidirectional messages
   useEffect(() => {
-    socket.on("ALERT_MESSAGE", (message) => {
-      setAlertMessage(message.firstname);
-      if (message.firstname !== alertMessage) {
-        newAlertNotification(message.firstname);
+    socket.on("send_contacts", (list) => {
+      setUsers(list);
+    });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", (event) => {
+      if (!suggestionBox.current.contains(event.target)) {
+        if (suggestionBox.current.style.display === "block") {
+          suggestionBox.current.style.display = "none";
+          inputElement.current.value = "";
+        }
       }
-
-      socket.emit("STORE_ALERT_TO_DB", message);
     });
   }, []);
 
-  useEffect(() => {
-    if (alerts.length <= 0) loadList();
-
-    socket.on("UPDATE_ALERT", (list) => {
-      setAlerts([...list]);
+  // Manage bidirectional message
+  useEffect(async () => {
+    socket.off("alert_sender").on("alert_sender", async (message) => {
+      newAlertNotification(message.firstName);
+      setAlertMessage(message.firstName);
+      socket.emit("store_alert_to_db", message);
+      await updateCurrentUser();
     });
   }, []);
-
-  const loadList = async () => {
-    const user = await axios.get("http://localhost:4000/getAlerts");
-    setAlerts(user.data);
-  };
 
   useEffect(async () => {
     const coords = await getLocationPromise;
@@ -62,22 +84,19 @@ const Dashboard = () => {
     await getLoggedIn();
   }, []);
 
-  // Render alerts in DOM
-  const renderAlerts = () => {
-    if (alerts.length > 0) {
-      return alerts
-        .filter((alert) => alert.alert.viewed === false)
-        .map((alert, i) => {
-          const { firstname, lastname } = alert.alert;
-          return <AlertCard firstname={firstname} lastname={lastname} />;
-        });
-    }
+  const updateCurrentUser = async () => {
+    const userData = await axios.get("/currentUser");
+    setUser(userData);
   };
 
   // Sends a list of users to server to send alerts to
   const sendAlerts = () => {
     socket.emit("send", sendList);
   };
+
+  const recieveAlert = async () => {
+
+  }
 
   // Adds clicked user to send list
   const addToSendList = (e) => {
@@ -90,13 +109,20 @@ const Dashboard = () => {
 
     // Check if user already in send list
     if (sendUsers.length === 0) {
+      console.log(sendUsers.length);
+
+      if (sendList.length === 7) {
+        return sendListFullNotification();
+      }
+
       setSendList((sendList) => [...sendList, user[0]]);
+
       return setSearchTerm(
-        `${user[0].firstName} ${user[0].lastName} - ${user[0].location.address}`
+        `${capFirstChar(user[0].firstName)} ${capFirstChar(user[0].lastName)}`
       );
     }
 
-    // console.log("User already in alert list (replace with alert");
+    userAlreadyInListNotification();
   };
 
   const searchHandler = (searchTerm) => {
@@ -111,8 +137,10 @@ const Dashboard = () => {
           .includes(searchTerm.toLowerCase());
       });
       setSearchResults(newContactList);
+      setShowSuggestionArea(true);
     } else {
-      setSearchResults(users);
+      setSearchResults([]);
+      setShowSuggestionArea(false);
     }
   };
 
@@ -135,66 +163,131 @@ const Dashboard = () => {
     });
   };
 
+  
+
   const suggestions = () => {
-    return searchResults.map((result) => (
+    return searchResults.map((suggestion) => (
       <li
-        data-id={result._id}
-        key={result._id}
+        data-id={suggestion._id}
+        key={suggestion._id}
         onClick={(e) => addToSendList(e)}
-        className="user-result-"
+        className="user-result"
       >
-        {`${result.firstName} ${result.lastName}  ${distanceBetween(result)
-          .toFixed(1)
-          .toString()} miles `}
+        <img className="send-avatar-icon" src={suggestion.image} />
+        <div class="suggestion-items">
+          <span className="suggestion-name">
+            {`${capFirstChar(suggestion.firstName)} ${capFirstChar(
+              suggestion.lastName
+            )}`}
+          </span>
+          <span className="suggestion-distance">
+            {`${distanceBetween(suggestion).toFixed(1).toString()} miles `}
+          </span>
+        </div>
       </li>
     ));
   };
+
+  if (isLoading) {
+    return (
+      <div class="spinner-container"><img src={Spinner} /></div>
+    );
+  }
 
   const getSearchTerm = () => {
     searchHandler(inputElement.current.value);
   };
 
-  const inputElement = useRef("");
+  const indexOfLastAlert = currentPage * alertsPerPage;
+  const indexOfFirstAlert = indexOfLastAlert - alertsPerPage;
+  const currentAlerts = user.data.alerts.slice(indexOfFirstAlert, indexOfLastAlert);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Render alerts in DOM
+  const renderAlerts = () => {
+    if (currentAlerts.length > 0) {
+      return currentAlerts.map((alert, i) => {
+        const { _id, currentUserId, firstname, lastname, address, image, viewed } = alert.alert;
+
+        return (
+          <AlertCard
+            key={i}
+            alertId={_id}
+            firstname={firstname}
+            lastname={lastname}
+            image={image}
+            viewed={viewed}
+            address={address}
+            identifier={currentUserId}
+            socket={socket}
+          />
+        );
+      });
+    }
+  };
 
   return (
     <>
       <ReactNotification />
       <main className="dash-area">
-        <ul>
-          {sendList.map((user) => (
-            <li>
-              {user.firstName} {user.lastName}
-            </li>
-          ))}
-        </ul>
-        <button onClick={sendAlerts} id="btn">
-          Test
-        </button>
-
-        <label id="search" class="pure-material-textfield-outlined">
-          <input
-            ref={inputElement}
-            value={searchTerm}
-            onChange={getSearchTerm}
-          />
-          <span>e.g. john smith</span>
-        </label>
-
-        <div>
-          <ul>
-            {searchResults.length > 0 ? (
-              suggestions()
-            ) : (
-              <li>No matches available</li>
-            )}
+        <div className="send-console">
+          <span className="send-list-count">
+            {sendList.length} people in send queue
+          </span>
+          <img onClick={sendAlerts} id="send-btn" src={Sender} />
+          <ul className="send-list-render">
+            {sendList.map((user) => (
+              <li className="send-user">
+                <img src={user.image} className="send-avatar" />
+              </li>
+            ))}
           </ul>
         </div>
 
+        <form id="sender-form">
+          <input
+            id="sender-suggestion"
+            ref={inputElement}
+            value={searchTerm}
+            placeholder="Type a name..."
+            onChange={() => getSearchTerm()}
+          />
+        </form>
+
+        <div className="contact-suggestion-list">
+          {searchResults.length > 0 ? (
+            <ul
+              id="suggestions"
+              ref={suggestionBox}
+              style={{ display: "block" }}
+            >
+              {suggestions()}
+            </ul>
+          ) : (
+            <ul
+              id="suggestions"
+              ref={suggestionBox}
+              style={{ display: "none" }}
+            ></ul>
+          )}
+        </div>
+
         <section>
-          <ul className="alerts-area">
-            {alerts.length > 0 ? renderAlerts() : "...loading"}
-          </ul>
+          {user.data.alerts.length > 0 ? (
+            <ul className="alerts-area">{renderAlerts()}</ul>
+          ) : (
+            <p>Sorry, no new alerts yet.</p>
+          )}
         </section>
+
+        <Pagination
+          alertsPerPage={alertsPerPage}
+          totalAlerts={user.data.alerts.length}
+          paginate={paginate}
+        />
       </main>
     </>
   );

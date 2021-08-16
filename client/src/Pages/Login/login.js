@@ -37,15 +37,7 @@ const Login = () => {
         }
       );
 
-      console.log(userObj);
-
       const userData = {
-        id: userObj.data.user._id,
-        firstname: userObj.data.user.firstName,
-        lastname: userObj.data.user.lastName,
-        email: userObj.data.user.email,
-        gender: userObj.data.user.gender,
-        location: userObj.data.user.location,
         token: userObj.data.token,
       };
 

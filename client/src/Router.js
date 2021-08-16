@@ -8,7 +8,7 @@ import SignupFinish from "./pages/signupFinish/SignupFinish";
 import SignupStarter from "./pages/signupStarter/SignupStarter";
 import AuthRoutes from "./components/auth/AuthRoutes";
 import NotFound404 from "./pages/404/NotFound404";
-
+import { UserContext } from "./context/UserContext";
 const Router = () => {
   const { loggedIn } = useContext(AuthContext);
 
@@ -20,7 +20,9 @@ const Router = () => {
         <Route exact path="/">
           <SignupStarter />
         </Route>
-        <Route path="/signup-details" component={SignupFinish} />
+        <Route path="/signup-details">
+          <SignupFinish />
+        </Route>
 
         <Route path="/login">
           <Login />

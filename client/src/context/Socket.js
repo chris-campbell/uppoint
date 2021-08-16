@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import socketIOClient from "socket.io-client";
 
 const SocketContext = createContext();
@@ -8,13 +8,15 @@ const SocketContextProvider = (props) => {
 
   const getSocket = async () => {
     const socket = socketIOClient("http://localhost:4000", {
-      query: { userData: localStorage.getItem("user") },
+      query: {
+        token: localStorage.getItem("user"),
+      },
     }).connect();
     setSocket(socket);
   };
 
-  useEffect(() => {
-    getSocket();
+  useEffect(async () => {
+    await getSocket();
   }, []);
 
   return (

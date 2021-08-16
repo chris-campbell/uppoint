@@ -16,6 +16,22 @@ export const uniqueEmailNotification = () => {
   });
 };
 
+export const sendListFullNotification = () => {
+  return store.addNotification({
+    title: "Send list maxed out.",
+    message: "You can only send out 7 alerts at a time",
+    type: "warning",
+    insert: "top",
+    container: "top-right",
+    animationIn: ["animate__animated", "animate__fadeIn"],
+    animationOut: ["animate__animated", "animate__fadeOut"],
+    dismiss: {
+      duration: 5000,
+      onScreen: true,
+    },
+  });
+};
+
 export const newAlertNotification = (sender) => {
   return store.addNotification({
     title: `New alert from ${sender}.`,

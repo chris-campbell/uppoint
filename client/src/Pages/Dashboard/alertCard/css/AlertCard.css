@@ -12,6 +12,8 @@
   flex-wrap: wrap;
   box-sizing: border-box;
   justify-content: center;
+  margin-top: 1.5rem;
+  padding: 0;
 }
 
 .card {
@@ -20,6 +22,9 @@
   margin-right: 1.5%;
   margin-left: 1.5%;
   margin-bottom: 15px;
+  border-radius: 2px;
+  -webkit-box-shadow: 13px 14px 8px -10px rgba(0, 0, 0, 0.34);
+  box-shadow: 13px 14px 8px -10px rgba(0, 0, 0, 0.34);
 }
 
 .card-read-wrapper {
@@ -30,7 +35,7 @@
 }
 
 .card-read-indicator {
-  background-color: var(--primary-color-red);
+  background-color: var(--secondary-color);
   width: 11px;
   height: 5px;
   border-radius: 50px;
@@ -44,22 +49,47 @@
 }
 
 .card-wrapper img {
-  padding-bottom: 20px;
-  width: 88px;
+  /* padding-bottom: 20px; */
+  width: 4rem;
+  height: 4rem;
+  border-radius: -7px;
+  border-radius: 50%;
+  border: 2px solid #d4d4d4;
+  margin-bottom: 15px;
 }
 
 .card-title {
   padding-bottom: 10px;
+  margin-bottom: 0.5rem;
+  font-size: 0.7rem !important;
+  font-weight: 600;
+  color: #656565;
+  text-align: center;
+}
+
+.card-city {
+  text-align: center;
+  font-size: 10px;
+  margin-bottom: 0.9rem;
 }
 
 .card-distance {
   margin-bottom: 10px;
+  text-align: center;
+  font-size: 11px;
 }
 
 .alert-btn {
   border: none;
   padding: 5px 20px;
-  border-radius: 5px;
+  border-radius: 24px;
   background-color: var(--primary-color-red);
   color: var(--accent-light);
+}
+.alert-btn:active {
+  padding: 4px 18px;
+}
+
+.alert-btn:hover {
+  background: rgb(170, 17, 17);
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation, Link } from "react-router-dom";
 import ReactNotification from "react-notifications-component";
 import NumberFormat from "react-number-format";
 import DateFnsUtils from "@date-io/date-fns";
@@ -17,15 +17,16 @@ import PlacesAutocomplete, {
   getLatLng,
 } from "react-places-autocomplete";
 import axios from "axios";
+import GenderRadioButton from "../../components/GenderRadioButton/GenderRadioButton";
 
 const SignupFinish = (props) => {
-  const { loggedIn } = useContext(AuthContext);
+  const { loggedIn, getLoggedIn } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (loggedIn) {
-      history.push("/dashboard");
-    }
-  });
+  // useEffect(() => {
+  //   if (loggedIn) {
+  //     history.push("/dashboard");
+  //   }
+  // });
 
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
@@ -38,17 +39,18 @@ const SignupFinish = (props) => {
   const [emailAddress, setEmailAddress] = useState("");
   const [image, setImage] = useState({});
 
-  const { firstname, lastname, email } = props.location.state;
+  let location = useLocation();
+  let history = useHistory();
+
+  console.log(location.state);
 
   useEffect(() => {
-    setFirstName(firstname);
-    setLastName(lastname);
-    setEmailAddress(email);
-  }, []);
-
-  const imageUpload = (e) => {
-    setImage(e.target.files[0]);
-  };
+    if (location.state) {
+      setFirstName(location.state.firstname);
+      setLastName(location.state.lastname);
+      setEmailAddress(location.state.email);
+    }
+  }, [location]);
 
   const handleSelect = async (value) => {
     const geo = await geocodeByAddress(value);
@@ -58,34 +60,70 @@ const SignupFinish = (props) => {
     setAddress(value);
   };
 
-  let history = useHistory();
+  const handleChange = (e) => {
+    console.log(e.target.files);
 
-  const creatUser = async () => {
-    const userData = {
-      firstName: firstName,
-      lastName: lastName,
-      email: emailAddress,
-      hashedPassword: password,
-      gender: gender,
-      birthday: selectedDate,
-      phone: mobile,
-      location: {
-        address: address,
-        lat: coordinates.lat,
-        lng: coordinates.lng,
-      },
-    };
+    let file = e.target.files[0];
+    setImage(file);
+  };
 
-    const user = await axios.post("/users", userData, {
-      withCredentials: true,
-    });
+  const createUser = async (e) => {
+    e.preventDefault();
 
-    console.log(user.data);
+    // let userData = {
+    //   firstName: firstName,
+    //   lastName: lastName,
+    //   email: emailAddress,
+    //   hashedPassword: password,
+    //   gender: gender,
+    //   birthday: selectedDate,
+    //   phone: mobile,
+    //   location: {
+    //     address: address,
+    //     lat: coordinates.lat,
+    //     lng: coordinates.lng,
+    //   },
+    // };
 
-    if (!user) {
-      return console.log("invalid result");
+    // const userObj = await axios.post("http://localhost:4000/users", userData, {
+    //   withCredentials: true,
+    // });
+
+    // // if (!userObj) {
+    // //   return console.log("invalid result");
+    // // }
+
+    const image = document.querySelector("#image");
+
+    const userFormData = new FormData();
+
+    userFormData.append("firstName", firstName);
+    userFormData.append("lastName", lastName);
+    userFormData.append("email", emailAddress);
+    userFormData.append("gender", gender);
+    userFormData.append("birthday", selectedDate);
+    userFormData.append("mobile", mobile);
+    userFormData.append("address", address);
+    userFormData.append("lat", coordinates.lat);
+    userFormData.append("lng", coordinates.lng);
+    userFormData.append("password", password);
+    if (image.files[0]) {
+      userFormData.append("image", image.files[0]);
     }
 
+    const userObj = await axios.post(
+      "http://localhost:4000/users",
+      userFormData
+    );
+
+    console.log(userObj);
+
+    const userData = {
+      token: userObj.data.token,
+    };
+
+    localStorage.setItem("user", JSON.stringify({ userData }));
+    getLoggedIn();
     history.push("/dashboard");
     newAccountNotification();
   };
@@ -102,65 +140,42 @@ const SignupFinish = (props) => {
                   {/* Hey {firstName.charAt(0).toUpperCase() + firstName.slice(1)}, */}
                 </h2>
                 <h1 className="signup-two__title">Add Details</h1>
-                <div className="signup-two__male-container">
-                  <div className="signup-two__btn">
-                    <label>Gender</label>
-                    <div class="signup-two__gender-option">
-                      <div
-                        data-gender="male"
-                        className="signup-two__icon-container"
-                        onClick={(e) =>
-                          setGender(e.currentTarget.getAttribute("data-gender"))
-                        }
-                      >
-                        <svg
-                          className="male-icon"
-                          data-name="male-icon"
-                          enable-background="new 0 0 512 512"
-                          height="512"
-                          viewBox="0 0 512 512"
-                          width="512"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g>
-                            <path d="m276.956 0v57.674h136.589l-101.389 101.389c-32.544-24.144-72.837-38.431-116.471-38.431-108.074 0-195.685 87.61-195.685 195.684 0 108.073 87.611 195.684 195.684 195.684s195.684-87.611 195.684-195.684c0-43.634-14.287-83.928-38.431-116.472l101.389-101.388v136.589h57.674v-235.045zm-81.272 447.552c-72.48 0-131.237-58.757-131.237-131.237s58.757-131.237 131.237-131.237 131.237 58.757 131.237 131.237c0 72.481-58.757 131.237-131.237 131.237z" />
-                          </g>
-                        </svg>
-                      </div>
-                      <span className="male-label">Male</span>
-                      <div
-                        data-gender="female"
-                        className="signup-two__icon-container"
-                        onClick={(e) =>
-                          setGender(e.currentTarget.getAttribute("data-gender"))
-                        }
-                      >
-                        <svg
-                          className="female-icon"
-                          data-name="female-icon"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 277.36 477.14"
-                        >
-                          <path
-                            d="M326.71,342H262.08V277.36a18.81,18.81,0,0,0-.21-2c65.41-11.12,115.38-68.16,115.38-136.68C377.25,62.21,315,0,238.57,0S99.89,62.21,99.89,138.68c0,68.52,50,125.56,115.38,136.68-.06.67-.21,1.31-.21,2V342H150.43a23.51,23.51,0,0,0,0,47h64.64v64.64a23.51,23.51,0,0,0,47,0V389h64.63a23.51,23.51,0,1,0,0-47ZM146.9,138.68a91.68,91.68,0,1,1,91.67,91.67A91.78,91.78,0,0,1,146.9,138.68Z"
-                            transform="translate(-99.89 0)"
+                <form
+                  // action="http://localhost:4000/users"
+                  // method="post"
+                  onSubmit={createUser}
+                  class="form"
+                  id="createUser"
+                  enctype="multipart/form-data"
+                >
+                  <div className="signup-two__male-container">
+                    <div className="signup-two__btn">
+                      <label>Gender</label>
+                      <div class="signup-two__gender-option">
+                        <label>
+                          Male
+                          <GenderRadioButton
+                            gender="male"
+                            onChange={(e) => setGender(e.target.value)}
                           />
-                        </svg>
+                        </label>
+                        <label>
+                          Female
+                          <GenderRadioButton
+                            gender="female"
+                            onChange={(e) => setGender(e.target.value)}
+                          />
+                        </label>
+                        <label>
+                          Other
+                          <GenderRadioButton
+                            gender="other"
+                            onChange={(e) => setGender(e.target.value)}
+                          />
+                        </label>
                       </div>
-                      <span className="female-label">Female</span>
-                      <div
-                        data-gender="other"
-                        className="signup-two__icon-container"
-                        onClick={(e) =>
-                          setGender(e.currentTarget.getAttribute("data-gender"))
-                        }
-                      >
-                        <div className="other-icon"></div>
-                      </div>
-                      <span className="other-label">Other</span>
                     </div>
-                  </div>
-                  <form class="form">
+
                     <div className="signup-two__birthday details-input">
                       <label>Date of Birth</label>
                       <KeyboardDatePicker
@@ -172,6 +187,7 @@ const SignupFinish = (props) => {
                         value={selectedDate}
                         InputAdornmentProps={{ position: "start" }}
                         onChange={(date) => handleDateChange(date)}
+                        name="birthday"
                       />
                     </div>
                     <div className="signup-two__mobile details-input">
@@ -183,6 +199,7 @@ const SignupFinish = (props) => {
                         format="### ###-####"
                         className="input-item"
                         mask=" "
+                        name="mobile"
                         onChange={(e) => setMobile(e.target.value)}
                       />
                     </div>
@@ -201,7 +218,10 @@ const SignupFinish = (props) => {
                         }) => (
                           <div className="location-input">
                             <label class="pure-material-textfield-outlined">
-                              <input {...getInputProps({ placeholder: "" })} />
+                              <input
+                                {...getInputProps({ placeholder: "" })}
+                                name="location"
+                              />
                               <span>Enter location</span>
                             </label>
                             <div>
@@ -227,15 +247,7 @@ const SignupFinish = (props) => {
                         )}
                       </PlacesAutocomplete>
                     </div>
-                    <div className="signup-two__image details-input">
-                      <label>Image</label>
-                      <Textfield
-                        label="Select image"
-                        variant="outlined"
-                        className="input-item"
-                        onChange={(e) => setAddress(e)}
-                      />
-                    </div>
+
                     <div className="signup-two__password details-input">
                       <label>Password</label>
                       <Textfield
@@ -244,10 +256,23 @@ const SignupFinish = (props) => {
                         type="password"
                         className="input-item"
                         onChange={(e) => setPassword(e.target.value)}
+                        name="password"
                       />
                     </div>
-                  </form>
-                </div>
+                    <div className="signup-two__avatar details-input">
+                      <label>Upload avatar</label>
+                      <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        onChange={(e) => setImage(e.target.value)}
+                      />
+                    </div>
+                    <button className="signup-two__finish-btn active-btn">
+                      Finish
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
             <div className="signup-two__copy">
@@ -260,13 +285,6 @@ const SignupFinish = (props) => {
                   justo
                 </p>
               </div>
-              <button
-                onClick={creatUser}
-                className="signup-two__finish-btn active-btn"
-              >
-                Finish
-              </button>
-              <img src={image} />
             </div>
           </div>
         </div>

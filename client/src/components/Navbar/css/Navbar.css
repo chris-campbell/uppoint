@@ -1,0 +1,15 @@
+.logout a {
+  color: #fff;
+}
+
+.btn {
+  padding: 0 !important;
+}
+
+.dashboard-nav__main-nav .avatar:hover {
+  width: 2.5rem;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 50%;
+  margin-right: 0.6rem;
+  height: 2.5rem;
+}
