@@ -1,6 +1,6 @@
 import React from 'react'
 import haversine from "haversine";
-import { capFirstChar } from '../../../utils/commons'
+import { capFirstChar } from "../../../../utils/commons"
 
 function Suggestion({ suggestion, addToSendList, currentUserLocation }) {
 

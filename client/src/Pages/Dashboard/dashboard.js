@@ -3,19 +3,19 @@ import ReactNotification from "react-notifications-component";
 import AuthContext from "../../context/AuthContext";
 import SocketContext from "../../context/Socket";
 import AlertCard from "./components/alertCard/AlertCard";
-import Suggestion from "./suggestion/Suggestion";
+import Suggestion from "./components/suggestion/Suggestion"
 import Pagination from "./components/pagination/Pagination";
 import axios from "axios";
 import { getLocationPromise } from "./js/coordinates.js";
 import { userAlreadyInListNotification, sendListFullNotification } from "../../utils/notification";
 import { UserContext } from "../../context/UserContext";
-import { capFirstChar } from '../../utils/commons';
+import { capFirstChar } from "../../utils/commons"
 import { receiveAlert, sendAlerts, currentUserUpdate, getContacts } from "./js/socketCommands"
 import Sender from "./img/sender.svg";
 import Spinner from "./img/spinner.svg";
 import "./css/dashboard.css";
-import UserAvatar from "./userAvatar/UserAvatar";
-import SuggestionInput from "./suggestionInput/SuggestionInput";
+import UserAvatar from "./components/userAvatar/UserAvatar"
+import SuggestionInput from "./components/suggestionInput/SuggestionInput";
 import SpinnerLoader from "./components/spinner/Spinner";
 
 const Dashboard = () => {

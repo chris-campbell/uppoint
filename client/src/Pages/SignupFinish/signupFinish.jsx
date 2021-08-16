@@ -17,7 +17,7 @@ import PlacesAutocomplete, {
   getLatLng,
 } from "react-places-autocomplete";
 import axios from "axios";
-import GenderRadioButton from "../../components/GenderRadioButton/GenderRadioButton";
+import GenderRadioButton from "./components/genderRadioButton/GenderRadioButton";
 
 const SignupFinish = (props) => {
   const { loggedIn, getLoggedIn } = useContext(AuthContext);
