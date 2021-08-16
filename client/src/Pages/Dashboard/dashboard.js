@@ -1,23 +1,22 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import ReactNotification from "react-notifications-component";
 import AuthContext from "../../context/AuthContext";
-import haversine from "haversine";
 import SocketContext from "../../context/Socket";
-import { getLocationPromise } from "./js/coordinates.js";
-import "./css/dashboard.css";
-import "./css/materialForm.css";
-import AlertCard from "./alertCard/AlertCard";
+import AlertCard from "./components/alertCard/AlertCard";
+import Suggestion from "./suggestion/Suggestion";
+import Pagination from "./components/pagination/Pagination";
 import axios from "axios";
-import {
-  newAlertNotification,
-  userAlreadyInListNotification,
-  sendListFullNotification,
-} from "../../utils/notification";
-import Pagination from "../../components/Pagination";
+import { getLocationPromise } from "./js/coordinates.js";
+import { userAlreadyInListNotification, sendListFullNotification } from "../../utils/notification";
 import { UserContext } from "../../context/UserContext";
+import { capFirstChar } from '../../utils/commons';
+import { receiveAlert, sendAlerts, currentUserUpdate, getContacts } from "./js/socketCommands"
 import Sender from "./img/sender.svg";
 import Spinner from "./img/spinner.svg";
-import { capFirstChar } from '../../utils/commons';
+import "./css/dashboard.css";
+import UserAvatar from "./userAvatar/UserAvatar";
+import SuggestionInput from "./suggestionInput/SuggestionInput";
+import SpinnerLoader from "./components/spinner/Spinner";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +25,6 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentUserLocation, setCurrentUserLocation] = useState({});
-  const [alertMessage, setAlertMessage] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [alertsPerPage] = useState(8);
   const [showSuggestionArea, setShowSuggestionArea] = useState(false);
@@ -40,24 +38,35 @@ const Dashboard = () => {
   const inputElement = useRef("");
   const suggestionBox = useRef("");
 
-  useEffect(async () => {
-    await updateCurrentUser();
-    setIsLoading(false);
-  }, []);
-
   useEffect(() => {
-    socket.on("update_user", async () => {
+    // Set initial user context state
+    (async () => {
       await updateCurrentUser();
-    });
+      setIsLoading(false);
+    })()
   }, []);
 
   useEffect(() => {
-    socket.on("send_contacts", (list) => {
-      setUsers(list);
-    });
+    // Update user context state when new change to users DB
+    currentUserUpdate(socket, updateCurrentUser)
+  }, []);
+
+    // Manage bidirectional message
+  useEffect(() => {
+    receiveAlert(socket, updateCurrentUser)
   }, []);
 
   useEffect(() => {
+    // Set users contact list will  available contact from DB
+    getContacts(socket, setContactList)
+  }, []);
+
+  const setContactList = (list) => {
+    setUsers(list)
+  }
+
+  useEffect(() => {
+    // Hide input suggestion box when clicked outside element
     document.addEventListener("mousedown", (event) => {
       if (!suggestionBox.current.contains(event.target)) {
         if (suggestionBox.current.style.display === "block") {
@@ -68,35 +77,22 @@ const Dashboard = () => {
     });
   }, []);
 
-  // Manage bidirectional message
-  useEffect(async () => {
-    socket.off("alert_sender").on("alert_sender", async (message) => {
-      newAlertNotification(message.firstName);
-      setAlertMessage(message.firstName);
-      socket.emit("store_alert_to_db", message);
-      await updateCurrentUser();
-    });
+  useEffect(() => {
+    const userLocation = async () => {
+      const coords = await getLocationPromise;
+      setCurrentUserLocation(coords);
+      await getLoggedIn();
+    }
+
+    userLocation()
   }, []);
 
-  useEffect(async () => {
-    const coords = await getLocationPromise;
-    setCurrentUserLocation(coords);
-    await getLoggedIn();
-  }, []);
-
+  // Get currentUser value from server
   const updateCurrentUser = async () => {
     const userData = await axios.get("/currentUser");
+    // Set to user context state
     setUser(userData);
   };
-
-  // Sends a list of users to server to send alerts to
-  const sendAlerts = () => {
-    socket.emit("send", sendList);
-  };
-
-  const recieveAlert = async () => {
-
-  }
 
   // Adds clicked user to send list
   const addToSendList = (e) => {
@@ -121,10 +117,10 @@ const Dashboard = () => {
         `${capFirstChar(user[0].firstName)} ${capFirstChar(user[0].lastName)}`
       );
     }
-
     userAlreadyInListNotification();
   };
 
+  // Filters contacts to display in suggestions
   const searchHandler = (searchTerm) => {
     setSearchTerm(searchTerm);
 
@@ -144,53 +140,19 @@ const Dashboard = () => {
     }
   };
 
-  // Get distance between two users
-  const distanceBetween = (user) => {
-    const { latitude, longitude } = currentUserLocation;
-
-    const searchedUserCoords = {
-      latitude: user.location.lat,
-      longitude: user.location.lng,
-    };
-
-    const currentUserCoords = {
-      latitude: latitude,
-      longitude: longitude,
-    };
-
-    return haversine(currentUserCoords, searchedUserCoords, {
-      unit: "mile",
-    });
-  };
-
-  
-
+  // Suggested contact list
   const suggestions = () => {
     return searchResults.map((suggestion) => (
-      <li
-        data-id={suggestion._id}
-        key={suggestion._id}
-        onClick={(e) => addToSendList(e)}
-        className="user-result"
-      >
-        <img className="send-avatar-icon" src={suggestion.image} />
-        <div class="suggestion-items">
-          <span className="suggestion-name">
-            {`${capFirstChar(suggestion.firstName)} ${capFirstChar(
-              suggestion.lastName
-            )}`}
-          </span>
-          <span className="suggestion-distance">
-            {`${distanceBetween(suggestion).toFixed(1).toString()} miles `}
-          </span>
-        </div>
-      </li>
+      <Suggestion 
+        suggestion={suggestion} 
+        addToSendList={addToSendList}
+        currentUserLocation={currentUserLocation} />
     ));
   };
 
   if (isLoading) {
     return (
-      <div class="spinner-container"><img src={Spinner} /></div>
+      <SpinnerLoader image={Spinner}/>
     );
   }
 
@@ -198,6 +160,7 @@ const Dashboard = () => {
     searchHandler(inputElement.current.value);
   };
 
+  // Pagination
   const indexOfLastAlert = currentPage * alertsPerPage;
   const indexOfFirstAlert = indexOfLastAlert - alertsPerPage;
   const currentAlerts = user.data.alerts.slice(indexOfFirstAlert, indexOfLastAlert);
@@ -237,24 +200,20 @@ const Dashboard = () => {
           <span className="send-list-count">
             {sendList.length} people in send queue
           </span>
-          <img onClick={sendAlerts} id="send-btn" src={Sender} />
+          <img onClick={() => sendAlerts(socket, sendList)} id="send-btn" src={Sender} />
           <ul className="send-list-render">
             {sendList.map((user) => (
-              <li className="send-user">
-                <img src={user.image} className="send-avatar" />
-              </li>
+              <UserAvatar image={user.image} />
             ))}
           </ul>
         </div>
 
         <form id="sender-form">
-          <input
-            id="sender-suggestion"
-            ref={inputElement}
-            value={searchTerm}
-            placeholder="Type a name..."
-            onChange={() => getSearchTerm()}
-          />
+          <SuggestionInput
+            inputElement={inputElement}
+            searchTerm={searchTerm}
+            getSearchTerm={getSearchTerm}
+          />   
         </form>
 
         <div className="contact-suggestion-list">

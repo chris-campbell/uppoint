@@ -1,4 +1,3 @@
-import { Input } from "@material-ui/core";
 import React from "react";
 
 function GenderRadioButton({ gender, onChange }) {
