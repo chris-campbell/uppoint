@@ -13,6 +13,7 @@ router.get("/users", async (req, res) => {
 // [POST] LOGIN USER
 router.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -50,27 +51,6 @@ router.get("/getAlerts", auth, async (req, res) => {
   const user = await User.findOne({ _id: userId });
   const alerts = await user.alerts;
   res.json(alerts);
-});
-
-// [POST] CREATE USER AND ADD TOKEN TO BROWSER
-router.post("/users", async (req, res) => {
-  const user = User(req.body);
-
-  try {
-    await user.save();
-
-    const token = await user.generateAuthToken();
-
-    res
-      .status(201)
-      .cookie("token", token, {
-        httpOnly: true,
-      })
-      .send();
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({ error: error.message });
-  }
 });
 
 // [GET] Retrieve user profile
@@ -180,7 +160,6 @@ router.post("/send", auth, async (req, res) => {
     const user = await User.findOne({ _id: req.body[0]._id });
 
     user.alerts = user.alerts.concat({ alert });
-    // await user.save();
   } catch (error) {
     res.status(500).send();
   }
@@ -188,7 +167,7 @@ router.post("/send", auth, async (req, res) => {
 
 router.get("/currentUser", auth, async (req, res) => {
   const currentUserId = req.user;
-  console.log(currentUserId);
+
   try {
     const currentUser = await User.findOne({ _id: currentUserId.toString() });
     res.json(currentUser);
@@ -200,15 +179,11 @@ router.get("/currentUser", auth, async (req, res) => {
 router.get("/currentUserId", auth, (req, res) => {
   try {
     const currentUserId = req.user;
-    console.log(currentUserId);
+
     res.send(currentUserId);
   } catch (error) {
     res.status(500).send();
   }
-});
-
-router.patch("/saveSocketId", async (req, res) => {
-  console.log("hello");
 });
 
 module.exports = router;

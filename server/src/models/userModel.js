@@ -16,6 +16,7 @@ const friendAlertSchema = new mongoose.Schema({
   lastname: String,
   gender: String,
   address: String,
+  image: Object,
   viewed: Boolean,
 });
 
@@ -69,7 +70,7 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: String,
+    type: Object,
   },
   alerts: [
     {

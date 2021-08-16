@@ -2,72 +2,99 @@ const express = require("express");
 const userRouter = require("./src/routers/userRouter.js");
 const cookieParser = require("cookie-parser");
 const User = require("./src/models/userModel");
-const fileUpload = require("express-fileupload");
-var multipart = require("connect-multiparty");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 require("./src/db/mongoose.js");
-const helmet = require("helmet");
+const fileUpload = require("express-fileupload");
 
 // Initializing the server
+
 const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http, {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"],
   },
 });
 
 // Core Application middleware
-
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("uploads"));
 app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 app.use(fileUpload());
 
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       useDefaults: false,
-//       directives: {
-//         defaultSrc: ["self"],
-//       },
-//     },
-//   })
-// );
-
-app.post("/upload", function (req, res) {
-  let sampleFile;
-  let uploadPath;
-
+// [POST] CREATE USER AND ADD TOKEN TO BROWSER
+app.post("/users", async (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded.");
   }
 
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  sampleFile = req.files.sampleFile;
-  uploadPath = __dirname + "/public/images/" + sampleFile.name;
+  const fileURL = req.files.image.name;
+  uploadPath = __dirname + "/uploads/" + fileURL;
 
-  // Use the mv() method to place the file somewhere on your server
-  sampleFile.mv(uploadPath, function (err) {
+  req.files.image.mv(uploadPath, (err) => {
     if (err) return res.status(500).send(err);
-
-    res.send();
   });
+
+  const {
+    firstName,
+    lastName,
+    email,
+    gender,
+    birthday,
+    mobile,
+    password,
+    location,
+    address,
+    lat,
+    lng,
+  } = req.body;
+
+  const userData = {
+    firstName,
+    lastName,
+    email,
+    gender: gender,
+    birthday,
+    phone: mobile,
+    hashedPassword: password,
+    location: {
+      address,
+      lat,
+      lng,
+    },
+    image: fileURL,
+  };
+
+  try {
+    const user = User(userData);
+
+    await user.save();
+
+    const token = await user.generateAuthToken();
+    res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+      })
+      .send({ user, token });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
 });
+
+const changeStream = User.watch();
 
 // Socket IO middleware
 io.use(async (socket, next) => {
   try {
-    console.log(
-      "SERVER",
-      JSON.parse(socket.handshake.query.userData).userData.token
-    );
-    const token = JSON.parse(socket.handshake.query.userData).userData.token;
+    const token = JSON.parse(socket.handshake.query.token).userData.token;
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
+
     socket.id = decoded.user;
     next();
   } catch (error) {}
@@ -77,37 +104,22 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
   console.log("New user connect with ID: " + socket.id);
 
-  // Get current user object from frontend
-  const currentUser = JSON.parse(socket.handshake.query.userData).userData;
+  // Inital startup
+  const users = await User.find({});
+  socket.emit("send_contacts", users);
 
-  // // console.log("@@@", currentUser);
-  // // Socket implementations
+  changeStream.on("change", (next) => {
+    console.log("next", next);
+    socket.emit("update_user");
+  });
+
+  // Retreive current user from server
+  const currentUser = await User.findOne({ _id: socket.id });
+
   require("./src/socketServices/send")(socket, currentUser);
   require("./src/socketServices/getUsersFromDB")(io, socket);
-
-  socket.on("STORE_ALERT_TO_DB", async (alert) => {
-    const { id, email, firstname, lastname, gender, location } = alert;
-
-    const storedAlert = {
-      currentUserId: id,
-      email: email,
-      firstname: firstname,
-      lastname: lastname,
-      gender: gender,
-      address: location,
-      viewed: false,
-    };
-
-    await User.findOneAndUpdate(
-      { _id: currentUser.id },
-      { $push: { alerts: { alert: storedAlert } } }
-    );
-
-    const user = await User.findOne({ _id: currentUser.id });
-    console.log("USERHER", user.alerts.length);
-
-    socket.emit("UPDATE_ALERT", user.alerts);
-  });
+  require("./src/socketServices/sendAlertResponse")(socket, currentUser);
+  require("./src/socketServices/storeAlertToDB")(socket, currentUser);
 
   // On Socket disconnect
   socket.on("disconnect", () => {
