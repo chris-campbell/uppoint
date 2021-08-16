@@ -21,8 +21,10 @@ module.exports = (client, currentUser) => {
       image,
     };
 
+    // If no users in the send list
     if (!list.length > 0) return console.log("Send list empty");
 
+    // Emit alert to each user in send list
     list.forEach((user) => {
       client.to(user._id).emit("alert_sender", alert);
     });

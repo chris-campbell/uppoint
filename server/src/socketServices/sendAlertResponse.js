@@ -2,15 +2,7 @@ const User = require("../models/userModel");
 
 module.exports = (socket, currentUser) => {
   socket.on("send_response", async (recipientData) => {
-    const {
-      id,
-      firstName,
-      lastName,
-      email,
-      gender,
-      location,
-      image,
-    } = currentUser;
+    const { id, firstName, lastName, email, gender, location, image } = currentUser;
 
     // Get current user object
     const updateUser = await User.findOne({ _id: id });
@@ -26,15 +18,7 @@ module.exports = (socket, currentUser) => {
     // Store in DB
     await updateUser.save();
 
-    const alert = {
-      id,
-      email,
-      firstName,
-      lastName,
-      gender,
-      location,
-      image,
-    };
+    const alert = {id, email, firstName, lastName, gender, location, image };
 
     socket.to(recipientData.identifier).emit("alert_sender", alert);
   });

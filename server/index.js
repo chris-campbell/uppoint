@@ -9,14 +9,9 @@ require("./src/db/mongoose.js");
 const fileUpload = require("express-fileupload");
 
 // Initializing the server
-
 const app = require("express")();
 const http = require("http").createServer(app);
-const io = require("socket.io")(http, {
-  cors: {
-    origin: "*",
-  },
-});
+const io = require("socket.io")(http, { cors: { origin: "*" }, });
 
 // Core Application middleware
 app.use(cookieParser());
@@ -47,7 +42,6 @@ app.post("/users", async (req, res) => {
     birthday,
     mobile,
     password,
-    location,
     address,
     lat,
     lng,
@@ -61,11 +55,7 @@ app.post("/users", async (req, res) => {
     birthday,
     phone: mobile,
     hashedPassword: password,
-    location: {
-      address,
-      lat,
-      lng,
-    },
+    location: { address, lat, lng },
     image: fileURL,
   };
 
@@ -86,9 +76,10 @@ app.post("/users", async (req, res) => {
   }
 });
 
+// Initialize watch of User model
 const changeStream = User.watch();
 
-// Socket IO middleware
+// Authenticate ever incoming connection for socket
 io.use(async (socket, next) => {
   try {
     const token = JSON.parse(socket.handshake.query.token).userData.token;
@@ -106,18 +97,18 @@ io.on("connection", async (socket) => {
 
   // Inital startup
   const users = await User.find({});
-  socket.emit("send_contacts", users);
+  socket.emit("get_contacts", users);
 
+  // Emit for every change to user collection
   changeStream.on("change", (next) => {
-    console.log("next", next);
     socket.emit("update_user");
   });
 
   // Retreive current user from server
   const currentUser = await User.findOne({ _id: socket.id });
 
+  // Sock commands implementations
   require("./src/socketServices/send")(socket, currentUser);
-  require("./src/socketServices/getUsersFromDB")(io, socket);
   require("./src/socketServices/sendAlertResponse")(socket, currentUser);
   require("./src/socketServices/storeAlertToDB")(socket, currentUser);
 
