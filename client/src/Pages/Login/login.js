@@ -5,6 +5,7 @@ import axios from "axios";
 import Logo from "./img/logo.svg";
 import "./css/login.css";
 import "./css/materialForm.css";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -52,21 +53,34 @@ const Login = () => {
 
   return (
     <div className="login">
-      <div className="login__wrapper">
-        <img alt="logo" src={Logo} className="login__logo" />
+      <div className="login-wrapper">
+        <img alt="logo" src={Logo} className="login-logo" />
+        <form className="login-form">
+          <input
+            className="text-field"
+            type="email"
+            placeholder="example@domain.com"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            className="text-field"
+            type="password"
+            placeholder="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <form className="login__form">
-          <label class="pure-material-textfield-outlined">
-            <input onChange={(e) => setEmail(e.target.value)} />
-            <span>Email</span>
-          </label>
-
-          <label class="pure-material-textfield-outlined">
-            <input onChange={(e) => setPassword(e.target.value)} />
-            <span>Password</span>
-          </label>
-          <button onClick={loginUser}>Submit</button>
+          <button className="login-btn" onClick={loginUser}>
+            Submit
+          </button>
         </form>
+
+        <p className="register-user">
+          Not Registered, sign up{" "}
+          <Link className="register-link" to="/">
+            here
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

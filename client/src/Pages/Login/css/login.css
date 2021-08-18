@@ -11,3 +11,62 @@
   background: var(--primary-color-red);
   height: 100vh;
 }
+
+.login-wrapper {
+  width: 60%;
+  margin:0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-wrapper .login-logo {
+  width: 4rem;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+  margin-top: 8rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-field {
+  background: transparent;
+  border: 1px solid #fff;
+  margin-bottom: 2rem;
+  height: 3rem;
+  color: #fff;
+  padding-left: 0.7rem;
+  border-radius: 0.3rem;
+  width: 100%;
+}
+
+.login-btn {
+  border: none;
+  height: 2.5rem;
+  border-radius: 0.3rem;
+  margin-bottom: 2rem;
+  background: var(--secondary-color);
+  color:var(--accent-light);
+  text-align: center;
+  width: 100%;
+}
+
+.login-btn:hover {
+  background: #d8b011;
+}
+
+.register-user {
+  color:var(--accent-light);
+}
+
+.register-link {
+  color:var(--secondary-color);
+  text-decoration: none;
+}
+
+.text-field::-webkit-input-placeholder {
+  color:var(--accent-light);
+}

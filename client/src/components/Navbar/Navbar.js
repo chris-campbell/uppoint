@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Logo from "./img/logo.svg";
 import Bell from "./img/bell.svg";
-import Avatar from "./img/profile.png";
 import AuthContext from "../../context/AuthContext";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
@@ -40,23 +39,23 @@ function Navbar() {
   }
 
   return (
-    <nav className="dashboard-nav">
-      <div class="dashboard-nav__wrapper">
+    <nav className="nav">
+      <div className="nav-wrapper">
         <img className="logo" alt="logo" src={Logo} />
 
-        <div className="dashboard-nav__notification-icon">
-          <div class="notify">
-            <img
-              className="dashboard-nav__icon"
-              alt="notification-icon"
-              src={Bell}
-            />
-            <div className="notification-count">{user.data.alerts.length}</div>
+        <div className="notification-icon">
+          <div className="notify">
+            <img className="nav-icon" alt="notification-bell" src={Bell} />
+            {user.data.alerts.length <= 0 ? null : (
+              <div className="notification-count">
+                {user.data.alerts.length}
+              </div>
+            )}
           </div>
         </div>
-        <ul className="dashboard-nav__main-nav">
+        <ul className="main-nav">
           <li>
-            <div class="dropdown">
+            <div className="dropdown">
               <img
                 className="avatar btn btn-secondary dropdown-toggle"
                 alt="user-avatar"
@@ -79,7 +78,6 @@ function Navbar() {
             </div>
           </li>
           <li className="username">{capFirstChar(user.data.firstName)}</li>
-          <li className="logout"></li>
         </ul>
       </div>
     </nav>

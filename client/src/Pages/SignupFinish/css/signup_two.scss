@@ -2,99 +2,64 @@
 @import "react-datepicker/dist/react-datepicker.css";
 
 :root {
-	--primary-color-red: #eb4d4b;
-	--secondary-color: #f1c40f;
-	--accent-light: #fff;
-	--accent-dark: #707070;
-	--label-main: rgb(66, 66, 66);
-	--label-sub: rgb(115 115 115);
+  --primary-color-red: #eb4d4b;
+	--secondary-color-red: rgb(170, 17, 17);
+  --secondary-color: #f1c40f;
+  --accent-light: #fff;
+  --accent-dark: #707070;
+  --label-main: rgb(66, 66, 66);
+  --label-sub: rgb(115 115 115);
+	--ff-primary: "source sans pro"
 }
 
 /* ADDITIONAL DETAILS SECTION */
 .signup-two {
 	height: 100vh;
 }
-.signup-two__wrapper {
+.signup-two-wrapper {
 	height: 100vh;
 }
-.signup-two__split {
+.page-split {
 	display: flex;
 	height: 100vh;
 }
-.signup-two__additional-details {
+
+.additional-details-section {
 	width: 70%;
 	height: 100%;
-}
-.signup-two__additional-details-wrapper {
-	width: 79%;
-	margin: 0 auto;
-	margin-top: 7%;
-	max-width: 37.5rem;
-}
-.signup-two__title {
-	margin-bottom: 3rem;
-	color: var(--label-main);
-}
-
-.signup-two__sub-title {
-	color: rgb(141, 141, 141)
+	.additional-details-wrapper {
+		width: 79%;
+		margin: 0 auto;
+		margin-top: 7%;
+		max-width: 37.5rem;
+ }
+ .additional-details-title {
+		margin-bottom: 3rem;
+		color: var(--label-main);
+	}
 }
 
-.signup-two__btn {
+.addditional-details-form {
+	display: flex;
+	flex-direction: column;
+	margin-top: 6rem;
+}
+
+.gender-radio-selectors {
 	fill: var(--primary-color-red);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin-bottom: 1.5rem;
 	label {
 		color: var(--label-sub);
+		margin-right: 1rem;
 	}
-	.male-icon {
-		fill: var(--primary-color-red);
-		color: var(--primary-color-red);
-		width: 0.8rem;
-	}
-	.female-icon {
-		fill: var(--primary-color-red);
-		color: var(--primary-color-red);
-		width: 0.6rem;
+	.label-right {
+		margin-right: 0.6rem;
 	}
 }
-.signup-two__gender-option {
-	display: flex;
-	align-items: center;
-	.male-label {
-		margin-right: 2rem;
-		color: var(--label-sub);
-	}
-	.female-label {
-		margin-right: 2rem;
-		color: var(--label-sub);
-	}
-	.other-label {
-		color: var(--label-sub);
-	}
-}
-.signup-two__icon-container {
-	width: 2rem;
-	height: 2rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	align-content: center;
-	border: 0.119rem solid var(--primary-color-red);
-	border-radius: 50%;
-	margin-right: 0.5rem;
-}
-.other-icon {
-	height: 0.125rem;
-	width: 0.625rem;
-	background: var(--primary-color-red);
-}
-.form {
-	display: flex;
-	flex-direction: column;
-	margin-top: 4rem;
-}
+
 .details-input {
 	display: flex;
 	justify-content: space-between;
@@ -102,90 +67,71 @@
 	margin-bottom: 1.5rem;
 	label {
 		color: var(--label-sub);
+    flex-basis: 40%;
+		width: 100%
 	}
-}
-.input-item {
-	width: 69%;
+
+	.location-input {
+		width: 100%;
+	}
 }
 
 /* COPY SECTION */
-.signup-two__copy {
+.signup-two-copy-section {
 	background: var(--secondary-color);
 	position: relative;
 	width: 30%;
 	height: 100vh;
-	img {
-		width: 7rem;
-		margin: 0 auto;
-		display: block;
-		text-align: center;
-		margin-bottom: 5rem;
+	.signup-two-copy-wrapper {
+		margin-top: 5rem;
+		padding-inline: 3rem;
+		.copy-icon {
+			width: 7rem;
+			margin: 0 auto;
+			display: block;
+			text-align: center;
+			margin-bottom: 5rem;
+		}
+		.copy-title {
+			color: var(--accent-light);
+			text-align: center;
+			margin-bottom: 1.5rem;
+			font-size: clamp(2rem, 1.4vw, 3rem);
+		}
+		.copy-desc {
+			color: var(--accent-light);
+			text-align: center;
+			font-size: clamp(1rem, 1vw, 1.5rem);
+		}
 	}
-	h3 {
-		color: var(--accent-light);
-		text-align: center;
-		margin-bottom: 1.5rem;
-		font-size: clamp(2rem, 1.4vw, 3rem);
-	}
-	p {
-		color: var(--accent-light);
-		text-align: center;
-		font-size: clamp(1rem, 1vw, 1.5rem);
-	}
+	
 }
-.signup-two__copy-wrapper {
-	margin-top: 10rem;
-	padding-inline: 3rem;
-}
-.signup-two__finish-btn {
+
+.finish-btn {
 	padding: 0.7rem 3rem;
 	background-color: var(--primary-color-red);
 	color: var(--accent-light);
 	border: none;
 	border-radius: 1.563rem;
-	// position: absolute;
-	// right: 2rem;
-	// bottom: 2rem;
 	cursor: pointer;
+	float: right;
+  margin-top: 1.5rem;
 }
-
-/* REACT TEXTFIELD OVERRIDES */
-.MuiInputLabel-outlined {
-	font-size: 0.9rem !important;
-	padding-left: 0.125 !important;
-	color: var(--label) !important;
-}
-.PrivateNotchedOutline-root-1 {
-	border: 1.5px solid #d2d2d2  !important;
-}
-
-
-.react-datepicker-wrapper {
-	width: 69%
-}
-
-
 
 .date-picker {
-	width: 100%;
+		width: 100%;
     padding: 1rem;
     border: 1px solid lightgrey;
     border-radius: 4px;
 }
 
-.date-picker .react-datepicker-ignore-onclickoutside {
-	display: inline
-}
-
-.details-input label {
-    color: var(--label-sub);
-    flex-basis: 40%;
-		width: 100%
-}
-
 .react-datepicker-wrapper {
     width: 69%;
     flex-basis: 69%;
+}
+
+.date-picker .react-datepicker-ignore-onclickoutside {
+	display: inline
 }
 
 .MuiFormControl-root {
@@ -200,17 +146,20 @@
     width: 100%;
 }
 
-.location-container {
-	width: 100%;
-}
 
-.location-search-input {
-	width: 100%;
-	padding: 1rem;
-	border: 1px solid lightgrey;
-	border-radius: 4px;
-}
+@media (max-width: 780px) {
 
-.location-input {
-	width: 100%;
+	.additional-details-section {
+		width: 100%;
+	}
+
+	.signup-two-copy-section {
+    width: 100%;
+		padding-bottom: 4rem;
+	}
+
+	.page-split {
+		display: flex;
+		flex-direction: column;
+	}
 }

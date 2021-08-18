@@ -1,4 +1,5 @@
 import React from 'react'
+import './css/UserAvatar.css'
 
 function UserAvatar({ image }) {
   return (

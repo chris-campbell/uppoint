@@ -3,18 +3,26 @@ import ReactNotification from "react-notifications-component";
 import AuthContext from "../../context/AuthContext";
 import SocketContext from "../../context/Socket";
 import AlertCard from "./components/alertCard/AlertCard";
-import Suggestion from "./components/suggestion/Suggestion"
+import Suggestion from "./components/suggestion/Suggestion";
 import Pagination from "./components/pagination/Pagination";
 import axios from "axios";
 import { getLocationPromise } from "./js/coordinates.js";
-import { userAlreadyInListNotification, sendListFullNotification } from "../../utils/notification";
+import {
+  userAlreadyInListNotification,
+  sendListFullNotification,
+} from "../../utils/notification";
 import { UserContext } from "../../context/UserContext";
-import { capFirstChar } from "../../utils/commons"
-import { receiveAlert, sendAlerts, currentUserUpdate, getContacts } from "./js/socketCommands"
+import { capFirstChar } from "../../utils/commons";
+import {
+  receiveAlert,
+  sendAlerts,
+  currentUserUpdate,
+  getContacts,
+} from "./js/socketCommands";
 import Sender from "./img/sender.svg";
 import Spinner from "./img/spinner.svg";
 import "./css/dashboard.css";
-import UserAvatar from "./components/userAvatar/UserAvatar"
+import UserAvatar from "./components/userAvatar/UserAvatar";
 import SuggestionInput from "./components/suggestionInput/SuggestionInput";
 import SpinnerLoader from "./components/spinner/Spinner";
 
@@ -29,63 +37,70 @@ const Dashboard = () => {
   const [alertsPerPage] = useState(8);
   const [showSuggestionArea, setShowSuggestionArea] = useState(false);
 
-
   // Function to get user current logged in status
   const { getLoggedIn } = useContext(AuthContext);
   const { user, setUser } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
-  
+
   const inputElement = useRef("");
   const suggestionBox = useRef("");
+  const ele = document.getElementById("suggestions");
 
   useEffect(() => {
     // Set initial user context state
     (async () => {
       await updateCurrentUser();
       setIsLoading(false);
-    })()
+    })();
   }, []);
 
   useEffect(() => {
     // Update user context state when new change to users DB
-    currentUserUpdate(socket, updateCurrentUser)
+    currentUserUpdate(socket, updateCurrentUser);
   }, []);
 
-    // Manage bidirectional message
+  // Manage bidirectional message
   useEffect(() => {
-    receiveAlert(socket, updateCurrentUser)
+    receiveAlert(socket, updateCurrentUser);
   }, []);
 
   useEffect(() => {
     // Set users contact list will  available contact from DB
-    getContacts(socket, setContactList)
+    getContacts(socket, setContactList);
   }, []);
 
   const setContactList = (list) => {
-    setUsers(list)
-  }
+    setUsers(list);
+  };
 
   useEffect(() => {
     // Hide input suggestion box when clicked outside element
-    document.addEventListener("mousedown", (event) => {
-      if (!suggestionBox.current.contains(event.target)) {
-        if (suggestionBox.current.style.display === "block") {
-          suggestionBox.current.style.display = "none";
-          inputElement.current.value = "";
-        }
-      }
-    });
-  }, []);
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
 
   useEffect(() => {
     const userLocation = async () => {
       const coords = await getLocationPromise;
       setCurrentUserLocation(coords);
       await getLoggedIn();
-    }
+    };
 
-    userLocation()
+    userLocation();
   }, []);
+
+  let handler = (event) => {
+    if (!suggestionBox.current.contains(event.target)) {
+      if (suggestionBox.current.style.display === "block") {
+        suggestionBox.current.style.display = "none";
+        inputElement.current.value = "";
+      }
+    }
+  };
 
   // Get currentUser value from server
   const updateCurrentUser = async () => {
@@ -143,17 +158,16 @@ const Dashboard = () => {
   // Suggested contact list
   const suggestions = () => {
     return searchResults.map((suggestion) => (
-      <Suggestion 
-        suggestion={suggestion} 
+      <Suggestion
+        suggestion={suggestion}
         addToSendList={addToSendList}
-        currentUserLocation={currentUserLocation} />
+        currentUserLocation={currentUserLocation}
+      />
     ));
   };
 
   if (isLoading) {
-    return (
-      <SpinnerLoader image={Spinner}/>
-    );
+    return <SpinnerLoader image={Spinner} />;
   }
 
   const getSearchTerm = () => {
@@ -163,7 +177,10 @@ const Dashboard = () => {
   // Pagination
   const indexOfLastAlert = currentPage * alertsPerPage;
   const indexOfFirstAlert = indexOfLastAlert - alertsPerPage;
-  const currentAlerts = user.data.alerts.slice(indexOfFirstAlert, indexOfLastAlert);
+  const currentAlerts = user.data.alerts.slice(
+    indexOfFirstAlert,
+    indexOfLastAlert
+  );
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -173,7 +190,15 @@ const Dashboard = () => {
   const renderAlerts = () => {
     if (currentAlerts.length > 0) {
       return currentAlerts.map((alert, i) => {
-        const { _id, currentUserId, firstname, lastname, address, image, viewed } = alert.alert;
+        const {
+          _id,
+          currentUserId,
+          firstname,
+          lastname,
+          address,
+          image,
+          viewed,
+        } = alert.alert;
 
         return (
           <AlertCard
@@ -195,12 +220,16 @@ const Dashboard = () => {
   return (
     <>
       <ReactNotification />
-      <main className="dash-area">
+      <main className="dashboard">
         <div className="send-console">
           <span className="send-list-count">
             {sendList.length} people in send queue
           </span>
-          <img onClick={() => sendAlerts(socket, sendList)} id="send-btn" src={Sender} />
+          <img
+            onClick={() => sendAlerts(socket, sendList)}
+            id="send-btn"
+            src={Sender}
+          />
           <ul className="send-list-render">
             {sendList.map((user) => (
               <UserAvatar image={user.image} />
@@ -213,7 +242,7 @@ const Dashboard = () => {
             inputElement={inputElement}
             searchTerm={searchTerm}
             getSearchTerm={getSearchTerm}
-          />   
+          />
         </form>
 
         <div className="contact-suggestion-list">

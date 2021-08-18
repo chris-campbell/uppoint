@@ -20,13 +20,7 @@ import axios from "axios";
 import GenderRadioButton from "./components/genderRadioButton/GenderRadioButton";
 
 const SignupFinish = (props) => {
-  const { loggedIn, getLoggedIn } = useContext(AuthContext);
-
-  // useEffect(() => {
-  //   if (loggedIn) {
-  //     history.push("/dashboard");
-  //   }
-  // });
+  const { getLoggedIn } = useContext(AuthContext);
 
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
@@ -41,8 +35,6 @@ const SignupFinish = (props) => {
 
   let location = useLocation();
   let history = useHistory();
-
-  console.log(location.state);
 
   useEffect(() => {
     if (location.state) {
@@ -60,38 +52,8 @@ const SignupFinish = (props) => {
     setAddress(value);
   };
 
-  const handleChange = (e) => {
-    console.log(e.target.files);
-
-    let file = e.target.files[0];
-    setImage(file);
-  };
-
   const createUser = async (e) => {
     e.preventDefault();
-
-    // let userData = {
-    //   firstName: firstName,
-    //   lastName: lastName,
-    //   email: emailAddress,
-    //   hashedPassword: password,
-    //   gender: gender,
-    //   birthday: selectedDate,
-    //   phone: mobile,
-    //   location: {
-    //     address: address,
-    //     lat: coordinates.lat,
-    //     lng: coordinates.lng,
-    //   },
-    // };
-
-    // const userObj = await axios.post("http://localhost:4000/users", userData, {
-    //   withCredentials: true,
-    // });
-
-    // // if (!userObj) {
-    // //   return console.log("invalid result");
-    // // }
 
     const image = document.querySelector("#image");
 
@@ -107,6 +69,7 @@ const SignupFinish = (props) => {
     userFormData.append("lat", coordinates.lat);
     userFormData.append("lng", coordinates.lng);
     userFormData.append("password", password);
+
     if (image.files[0]) {
       userFormData.append("image", image.files[0]);
     }
@@ -132,42 +95,50 @@ const SignupFinish = (props) => {
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div className="signup-two">
         <ReactNotification />
-        <div className="signup-two__wrapper">
-          <div className="signup-two__split">
-            <div className="signup-two__additional-details">
-              <div className="signup-two__additional-details-wrapper">
-                <h2 className="signup-two__sub-title">
-                  {/* Hey {firstName.charAt(0).toUpperCase() + firstName.slice(1)}, */}
-                </h2>
-                <h1 className="signup-two__title">Add Details</h1>
+        <div className="signup-two-wrapper">
+          <div className="page-split">
+            <div className="signup-two-copy-section">
+              <div class="signup-two-copy-wrapper">
+                <img className="copy-icon" alt="push-icon" src={Avatar} />
+                <h3 className="copy-title">
+                  Provide some details about yourself
+                </h3>
+                <p className="copy-desc">
+                  Fusce vitae iaculis lorem, eu sodales metus. Sed pellentesque
+                  nunc non ipsum aliquet volutpat a a leo. Nunc porttitor tellus
+                  justo
+                </p>
+              </div>
+            </div>
+            <div className="additional-details-section">
+              <div className="additional-details-wrapper">
+                <h1 className="additional-details-title">Add Details</h1>
                 <form
-                  // action="http://localhost:4000/users"
-                  // method="post"
                   onSubmit={createUser}
-                  class="form"
+                  class="additional-details-form"
                   id="createUser"
                   enctype="multipart/form-data"
                 >
-                  <div className="signup-two__male-container">
-                    <div className="signup-two__btn">
+                  <div className="select-gender-container">
+                    <div className="gender-radio-selectors">
                       <label>Gender</label>
-                      <div class="signup-two__gender-option">
+                      <div class="gender-options">
                         <label>
-                          Male
+                          <span className="label-right">Male</span>
                           <GenderRadioButton
                             gender="male"
                             onChange={(e) => setGender(e.target.value)}
                           />
                         </label>
                         <label>
-                          Female
+                          <span className="label-right">Female</span>
                           <GenderRadioButton
                             gender="female"
                             onChange={(e) => setGender(e.target.value)}
                           />
                         </label>
                         <label>
-                          Other
+                          <span className="label-right">Other</span>
                           <GenderRadioButton
                             gender="other"
                             onChange={(e) => setGender(e.target.value)}
@@ -176,34 +147,32 @@ const SignupFinish = (props) => {
                       </div>
                     </div>
 
-                    <div className="signup-two__birthday details-input">
+                    <div className="details-input">
                       <label>Date of Birth</label>
                       <KeyboardDatePicker
-                        autoOk
-                        variant="inline"
                         inputVariant="outlined"
-                        label="Date of birth"
                         format="MM/dd/yyyy"
+                        placeholder="Date of birth"
                         value={selectedDate}
                         InputAdornmentProps={{ position: "start" }}
                         onChange={(date) => handleDateChange(date)}
                         name="birthday"
                       />
                     </div>
-                    <div className="signup-two__mobile details-input">
+                    <div className="details-input">
                       <label>Mobile</label>
                       <NumberFormat
-                        customInput={Textfield}
-                        variant="outlined"
-                        label="718 555 5555"
-                        format="### ###-####"
-                        className="input-item"
-                        mask=" "
                         name="mobile"
+                        className="input-item"
+                        placeholder="718 555 5555"
+                        format="### ### ####"
+                        variant="outlined"
+                        mask=" "
+                        customInput={Textfield}
                         onChange={(e) => setMobile(e.target.value)}
                       />
                     </div>
-                    <div className="signup-two__location details-input">
+                    <div className="details-input">
                       <label>Location</label>
                       <PlacesAutocomplete
                         value={address}
@@ -217,13 +186,15 @@ const SignupFinish = (props) => {
                           loading,
                         }) => (
                           <div className="location-input">
-                            <label class="pure-material-textfield-outlined">
-                              <input
-                                {...getInputProps({ placeholder: "" })}
-                                name="location"
-                              />
-                              <span>Enter location</span>
-                            </label>
+                            <Textfield
+                              {...getInputProps({
+                                placeholder: "",
+                              })}
+                              name="location"
+                              variant="outlined"
+                              placeholder="1 New York Plaza, FDR Drive, New York, NY"
+                            />
+
                             <div>
                               {loading ? <div>...loading</div> : null}
                               {suggestions.map((suggestion) => {
@@ -248,18 +219,18 @@ const SignupFinish = (props) => {
                       </PlacesAutocomplete>
                     </div>
 
-                    <div className="signup-two__password details-input">
+                    <div className="details-input">
                       <label>Password</label>
                       <Textfield
-                        label="Password"
                         variant="outlined"
                         type="password"
+                        placeholder="password"
                         className="input-item"
                         onChange={(e) => setPassword(e.target.value)}
                         name="password"
                       />
                     </div>
-                    <div className="signup-two__avatar details-input">
+                    <div className="details-input">
                       <label>Upload avatar</label>
                       <input
                         type="file"
@@ -268,22 +239,9 @@ const SignupFinish = (props) => {
                         onChange={(e) => setImage(e.target.value)}
                       />
                     </div>
-                    <button className="signup-two__finish-btn active-btn">
-                      Finish
-                    </button>
+                    <button className="finish-btn active-btn">Finish</button>
                   </div>
                 </form>
-              </div>
-            </div>
-            <div className="signup-two__copy">
-              <div class="signup-two__copy-wrapper">
-                <img alt="push-icon" src={Avatar} />
-                <h3>Provide some details about yourself</h3>
-                <p>
-                  Fusce vitae iaculis lorem, eu sodales metus. Sed pellentesque
-                  nunc non ipsum aliquet volutpat a a leo. Nunc porttitor tellus
-                  justo
-                </p>
               </div>
             </div>
           </div>

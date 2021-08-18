@@ -61,14 +61,6 @@ const SignupStarter = () => {
     }
   };
 
-  const isValidateEmail = () => {
-    if (validator.isEmail(email)) {
-      return true;
-    }
-
-    return false;
-  };
-
   const isFieldsEmpty = () => {
     if (firstname === "" || lastname === "" || email === "") {
       return false;
@@ -77,65 +69,58 @@ const SignupStarter = () => {
   };
 
   return (
-    <div className="join">
+    <div className="signup">
       <ReactNotification />
-      <div className="join__wrapper">
-        <div className="join__split">
-          <div className="join__signup">
+      <div className="signup-wrapper">
+        <div className="two-split">
+          <div className="login-section">
             <img alt="logo" src={Logo} />
-            <div class="join__signup-copy-wrapper">
-              <h1>Join the search!</h1>
-              <p>
+            <div class="login-copy-wrapper">
+              <h1 className="login-section-title">Join the search!</h1>
+              <p class="login-section-desc">
                 Proin egestas erat vel magna ornare finibus. Sed sed tristique
                 leo, consectetur fringilla turpis.
               </p>
-              <button className="join__signin-btn">Sign in</button>
+              <Link to="/login">
+                <button className="send-to-login-btn">Sign in</button>
+              </Link>
             </div>
           </div>
-          <div className="join__create-account">
-            <div class="join__create-wrapper">
-              <h1>Create an account</h1>
-              <div className="join__google-btn">
-                <div
-                  onClick={() => isValidateEmail()}
-                  class="google-icon-wrapper"
-                >
-                  <img alt="google-icon" src={GoogleIcon} />
-                  <span>Sign in with Google</span>
-                </div>
-              </div>
-              <p>or use your email to sign up</p>
-              <form className="join__signup-form">
+          <div className="register-section">
+            <div class="register-wrapper">
+              <h1 className="register-title">Create an account</h1>
+
+              <form className="signup-form">
                 <Textfield
-                  label="First name"
+                  placeholder="First name"
                   variant="outlined"
-                  className="join__input-item"
+                  className="input-item"
                   onChange={(e) => setFirstName(e.target.value)}
                 />
                 <Textfield
-                  label="Last name"
+                  placeholder="Last name"
                   variant="outlined"
-                  className="join__input-item"
+                  className="input-item"
                   onChange={(e) => setLastName(e.target.value)}
                 />
                 <Textfield
-                  label="Email"
+                  placeholder="Email"
                   variant="outlined"
-                  className="join__input-item"
+                  className="input-item"
                   id="email-text-field"
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 {isFieldsEmpty() ? (
                   <Link to="/">
                     <button
-                      className="join__submit-btn"
+                      className="submit-btn"
                       onClick={() => emailUnique()}
                     >
                       Continue
                     </button>
                   </Link>
                 ) : (
-                  <button className="join__disable-btn" disabled="l">
+                  <button className="disable-btn" disabled="l">
                     Continue
                   </button>
                 )}

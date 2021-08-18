@@ -1,15 +1,79 @@
-.logout a {
-  color: #fff;
+.nav {
+  background-color: var(--primary-color-red);
 }
 
-.btn {
-  padding: 0 !important;
+.nav-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  height: auto;
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr;
+  align-items: center;
+  padding: 1.4rem;
 }
 
-.dashboard-nav__main-nav .avatar:hover {
+.nav-wrapper .logo {
+  width: 3rem;
+}
+
+.notification-icon {
+  margin-left: 6rem;
+}
+
+.main-nav {
+  display: flex;
+  list-style-type: none;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.main-nav .avatar {
+  width: 2.5rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  margin-right: 0.6rem;
+  height: 2.5rem;
+  padding: 0;
+}
+
+.main-nav .avatar:hover {
   width: 2.5rem;
   border: 2px solid rgb(255, 255, 255);
   border-radius: 50%;
   margin-right: 0.6rem;
   height: 2.5rem;
 }
+
+.main-nav .username {
+  color: var(--accent-light);
+  font-size: 0.9rem;
+}
+
+.notification-icon .notify {
+  display: flex;
+  margin-right: 1px;
+}
+
+.notify .nav-icon {
+  width: 1rem;
+}
+
+.notification-icon .notification-count {
+  padding: 0.2rem;
+  width: 17px;
+  height: 17px;
+  background: #0d6efd;
+  text-align: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  position: relative;
+  right: 7px;
+  bottom: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+

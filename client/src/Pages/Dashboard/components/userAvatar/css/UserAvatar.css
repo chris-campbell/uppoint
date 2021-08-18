@@ -1,0 +1,37 @@
+.send-avatar {
+  vertical-align: middle;
+  width: 2.5rem;
+  border-radius: 50%;
+  height: 2.5rem;
+  border: 2px solid #fff;
+}
+
+.send-user:nth-child(2) {
+  position: relative;
+  right: 9px;
+}
+
+.send-user:nth-child(3) {
+  position: relative;
+  right: 16px;
+}
+
+.send-user:nth-child(4) {
+  position: relative;
+  right: 23px;
+}
+
+.send-user:nth-child(5) {
+  position: relative;
+  right: 30px;
+}
+
+.send-user:nth-child(6) {
+  position: relative;
+  right: 37px;
+}
+
+.send-user:nth-child(7) {
+  position: relative;
+  right: 44px;
+}
